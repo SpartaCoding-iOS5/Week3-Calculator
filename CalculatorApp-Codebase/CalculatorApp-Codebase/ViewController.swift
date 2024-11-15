@@ -40,6 +40,7 @@ class ViewController: UIViewController {
             button.setTitle(self.title, for: .normal)
             button.setTitleColor(.white, for: .normal)
             button.titleLabel?.font = .boldSystemFont(ofSize: 30)
+            button.addTarget(self, action: #selector(buttonAction(from:)), for: .touchDown)
             return button
         }
     }
@@ -87,27 +88,29 @@ class ViewController: UIViewController {
     }
     
     // Button Actions:
-    @objc private func button0Action() { self.expression.append("0") }
-    @objc private func button1Action() { self.expression.append("1") }
-    @objc private func button2Action() { self.expression.append("2") }
-    @objc private func button3Action() { self.expression.append("3") }
-    @objc private func button4Action() { self.expression.append("4") }
-    @objc private func button5Action() { self.expression.append("5") }
-    @objc private func button6Action() { self.expression.append("6") }
-    @objc private func button7Action() { self.expression.append("7") }
-    @objc private func button8Action() { self.expression.append("8") }
-    @objc private func button9Action() { self.expression.append("9") }
-    @objc private func buttonAddAction() { self.expression.append("+") }
-    @objc private func buttonSubtractAction() { self.expression.append("-") }
-    @objc private func buttonMultiplyAction() { self.expression.append("×") }
-    @objc private func buttonDivideAction() { self.expression.append("÷") }
-    @objc private func buttonAllClearAction() { resetExpression() }
-    @objc private func buttonEqualAction() { if let result = calculate(expression) { expression = String(result) } }
-    
+    @objc private func buttonAction(from sender: UIButton) {
+        guard let buttonTitle = sender.titleLabel?.text else { return }
+
+        switch buttonTitle {
+        case "0", "1", "2", "3", "4", "5", "6", "7", "8", "9":
+            self.expression.append(buttonTitle)
+        case "+", "-", "×", "÷":
+            self.expression.append(buttonTitle)
+        case "AC":
+            resetExpression()
+        case "=":
+            if let result = calculate(expression) {
+                expression = String(result)
+            }
+        default:
+            break
+        }
+    }
+
     private func resetExpression() { self.expression = "0" }
         
     private func calculate(_ expression: String) -> Int? {
-        let expression = NSExpression(format: inputSanitization(expression))
+        let expression = NSExpression(format: changeMathSymbols(expression))
         if let result = expression.expressionValue(with: nil, context: nil) as? Int {
             return result
         } else {
@@ -115,8 +118,8 @@ class ViewController: UIViewController {
         }
     }
     
-    private func inputSanitization(_ expression: String) -> String {
-        expression // Change math symbols
+    private func changeMathSymbols(_ expression: String) -> String {
+        expression
             .replacingOccurrences(of: "×", with: "*")
             .replacingOccurrences(of: "÷", with: "/")
     }
@@ -174,23 +177,6 @@ class ViewController: UIViewController {
             .forEach { horizontalStacks[2].addArrangedSubview($0) }
         [buttonAllClear, button0, buttonEqual, buttonDivide]
             .forEach { horizontalStacks[3].addArrangedSubview($0) }
-        
-        button0.addTarget(self, action: #selector(button0Action), for: .touchDown)
-        button1.addTarget(self, action: #selector(button1Action), for: .touchDown)
-        button2.addTarget(self, action: #selector(button2Action), for: .touchDown)
-        button3.addTarget(self, action: #selector(button3Action), for: .touchDown)
-        button4.addTarget(self, action: #selector(button4Action), for: .touchDown)
-        button5.addTarget(self, action: #selector(button5Action), for: .touchDown)
-        button6.addTarget(self, action: #selector(button6Action), for: .touchDown)
-        button7.addTarget(self, action: #selector(button7Action), for: .touchDown)
-        button8.addTarget(self, action: #selector(button8Action), for: .touchDown)
-        button9.addTarget(self, action: #selector(button9Action), for: .touchDown)
-        buttonAdd.addTarget(self, action: #selector(buttonAddAction), for: .touchDown)
-        buttonSubtract.addTarget(self, action: #selector(buttonSubtractAction), for: .touchDown)
-        buttonMultiply.addTarget(self, action: #selector(buttonMultiplyAction), for: .touchDown)
-        buttonDivide.addTarget(self, action: #selector(buttonDivideAction), for: .touchDown)
-        buttonAllClear.addTarget(self, action: #selector(buttonAllClearAction), for: .touchDown)
-        buttonEqual.addTarget(self, action: #selector(buttonEqualAction), for: .touchDown)
     }
 }
 
