@@ -156,7 +156,7 @@
 각 폴더를 만들어주고 Controller에는 CalculatorViewController
 View에는 LabelComponents를 구현하여 연결하였다.
 
-**LabelComponents**
+**LabelComponents.swift**
 ```swift
 import UIKit
 import SnapKit
@@ -181,7 +181,7 @@ class LabelComponents: UILabel {
 }
 ```
 
-**CalculatorViewController**
+**CalculatorViewController.swift**
 ```
 import UIKit
 import SnapKit
@@ -206,6 +206,115 @@ class CalculatorViewController: UIViewController {
             $0.leading.equalTo(view.snp.leading).inset(30)
             $0.trailing.equalTo(view.snp.trailing).inset(30)
             $0.top.equalTo(view.snp.top).inset(200)
+        }
+    }
+}
+```
+## Level 2 - 버튼 컴포넌트, 스태뷰 컴포넌트 구현 및 연결
+1. View/ButtonComponents, StackViewComponents 파일을 만들고 Button, HorizontalStackView의 UI 컴포넌트 클래스를 만듬
+2. 컴포넌트를 View 컨트롤러에 연결해 줌으로 써 Level 2의 요구조건을 만족함.
+
+**ButtonComponents.swift**
+```swift
+import UIKit
+import SnapKit
+
+
+/// 게산기 버튼 커스텀 UI 컴포넌트
+class ButtonComponents: UIButton {
+    
+    /// 계산기 버튼 컴포넌트 초기화
+    /// - Parameters:
+    ///   - title: 버튼의 숫자 및 연산자
+    ///   - backgroundColor: 버튼 색상
+    init(title: String, backgroundColor: UIColor) {
+        super.init(frame: .zero)
+        self.setTitle(title, for: .normal)
+        self.backgroundColor = backgroundColor
+        self.titleLabel?.font = UIFont.boldSystemFont(ofSize: 30)
+        self.frame.size.width = 80
+        self.frame.size.height = 80
+        // self.layer.cornerRadius = 40
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+```
+
+**StackViewComponents.swift**
+```swift
+import UIKit
+import SnapKit
+
+/// 4개의 버튼을 담는 HorizontalstackView
+class HorizontalStackViewComponents: UIStackView {
+    
+    /// HorizontalStackView 커스텀 UI 컴퍼넌트 초기화
+    /// - Parameter addButtton: HorizontalStackView에 넣을 버튼 (왼쪽 부터 들어감)
+    init(addButtton: [UIButton]) {
+        super.init(frame: .zero)
+        self.axis = .horizontal
+        self.spacing = 10
+        self.distribution = .fillEqually
+        
+        addButtton.forEach{addArrangedSubview($0)}
+        
+        self.snp.makeConstraints {
+            $0.height.equalTo(80)
+        }
+    }
+    
+    required init(coder: NSCoder) {
+        fatalError("이 초기화 메서드는 구현되지 않았습니다.")
+    }
+}
+```
+
+**CalculatorViewController.swift**
+```swift
+import UIKit
+import SnapKit
+
+
+/// 계산기 최상단 화면 (RootView)
+class CalculatorViewController: UIViewController {
+    
+    private let resultLabel = LabelComponents(title: "0")
+    private let button7 = ButtonComponents(title: "7", backgroundColor: UIColor(red: 58/255, green: 58/255, blue: 58/255, alpha: 1.0))
+    private let button8 = ButtonComponents(title: "8", backgroundColor: UIColor(red: 58/255, green: 58/255, blue: 58/255, alpha: 1.0))
+    private let button9 = ButtonComponents(title: "9", backgroundColor: UIColor(red: 58/255, green: 58/255, blue: 58/255, alpha: 1.0))
+    private let plusButton = ButtonComponents(title: "+", backgroundColor: UIColor(red: 58/255, green: 58/255, blue: 58/255, alpha: 1.0))
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        setupUI()
+    }
+    
+    
+    /// UI 연결 및 조건 설정
+    private func setupUI() {
+        view.backgroundColor = .black
+        
+        let horizontalStackView = HorizontalStackViewComponents(addButtton: [button7, button8, button9, plusButton])
+        
+        [resultLabel, horizontalStackView]
+            .forEach { view.addSubview($0) }
+        
+        // SnapKit을 사용하여 제약 조건 설정
+        resultLabel.snp.makeConstraints {
+            $0.height.equalTo(100)
+            $0.leading.equalTo(view.snp.leading).inset(30)
+            $0.trailing.equalTo(view.snp.trailing).inset(30)
+            $0.top.equalTo(view.snp.top).inset(200)
+        }
+        
+        horizontalStackView.snp.makeConstraints {
+            $0.centerX.equalTo(view.snp.centerX)
+            $0.top.equalTo(resultLabel.snp.bottom).offset(30)
+            $0.leading.equalTo(view.snp.leading).offset(10)
+            $0.trailing.equalTo(view.snp.trailing).inset(10)
         }
     }
 }
