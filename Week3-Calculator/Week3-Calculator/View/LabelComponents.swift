@@ -20,8 +20,7 @@ class LabelComponents: UILabel {
         self.font = .systemFont(ofSize: 60, weight: .bold)
     }
     
-    required init?(coder: NSCoder) {
-        print("이 초기화 메서드는 구현되지 않았습니다.")
-        return nil
+    required init(coder: NSCoder) {
+        super.init(coder: coder)!
     }
 }

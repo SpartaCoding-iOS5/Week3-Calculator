@@ -9,7 +9,7 @@ import SnapKit
 
 
 /// 게산기 버튼 커스텀 UI 컴포넌트
-class ButtonComponents: UIButton {
+public class ButtonComponents: UIButton {
     
     /// 계산기 버튼 컴포넌트 초기화
     /// - Parameters:
@@ -26,6 +26,6 @@ class ButtonComponents: UIButton {
     }
     
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        super.init(coder: coder)
     }
 }

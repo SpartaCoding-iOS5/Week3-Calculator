@@ -319,3 +319,289 @@ class CalculatorViewController: UIViewController {
     }
 }
 ```
+
+## Level 3 - 버튼 컴포넌트, 스태뷰 컴포넌트 구현 및 연결
+1. View/StackViewComponents 파일에 VerticalStackView의 UI 컴포넌트 클래스를 만듬
+2. 버튼들을 추가적으로 만들고 HorizontalstackView들을 추가적으로 만들어 VerticalStackView에 넣어줌.
+3. ViewController에 연결해 줌으로 써 Level 3의 요구조건을 만족함.
+
+**StackViewComponents.swift**
+``` swift
+import UIKit
+import SnapKit
+
+/// 4개의 버튼을 담는 HorizontalstackView
+class HorizontalStackViewComponents: UIStackView {
+    ...
+}
+
+/// 버튼들이 담긴 4개의 HorizontalStackView를 담는 VerticalStackView
+class VerticalStackViewComponents: UIStackView {
+    
+    /// VerticalStackView 커스텀 UI 컴포넌트 초기화
+    /// - Parameter addStackView: 버튼 모음 HorizontalStackView (왼쪽 부터 들어감)
+    init(addStackView: [UIStackView]) {
+        super.init(frame: .zero)
+        self.axis = .vertical
+        self.spacing = 10
+        self.distribution = .fillEqually
+        self.snp.makeConstraints {
+            $0.width.equalTo(350)
+        }
+    }
+    
+    required init(coder: NSCoder) {
+        super.init(coder: coder)
+    }
+}
+```
+
+**CalculatorViewController.swift**
+```swift
+/// 계산기 최상단 화면 (RootView)
+class CalculatorViewController: UIViewController {
+    
+    private let resultLabel = LabelComponents(title: "0")
+    private let button7 = ButtonComponents(title: "7", backgroundColor: UIColor(red: 58/255, green: 58/255, blue: 58/255, alpha: 1.0))
+    private let button8 = ButtonComponents(title: "8", backgroundColor: UIColor(red: 58/255, green: 58/255, blue: 58/255, alpha: 1.0))
+    private let button9 = ButtonComponents(title: "9", backgroundColor: UIColor(red: 58/255, green: 58/255, blue: 58/255, alpha: 1.0))
+    private let plusButton = ButtonComponents(title: "+", backgroundColor: UIColor(red: 58/255, green: 58/255, blue: 58/255, alpha: 1.0))
+    private let button4 = ButtonComponents(title: "4", backgroundColor: UIColor(red: 58/255, green: 58/255, blue: 58/255, alpha: 1.0))
+    private let button5 = ButtonComponents(title: "5", backgroundColor: UIColor(red: 58/255, green: 58/255, blue: 58/255, alpha: 1.0))
+    private let button6 = ButtonComponents(title: "6", backgroundColor: UIColor(red: 58/255, green: 58/255, blue: 58/255, alpha: 1.0))
+    private let minusButton = ButtonComponents(title: "-", backgroundColor: UIColor(red: 58/255, green: 58/255, blue: 58/255, alpha: 1.0))
+    private let button1 = ButtonComponents(title: "1", backgroundColor: UIColor(red: 58/255, green: 58/255, blue: 58/255, alpha: 1.0))
+    private let button2 = ButtonComponents(title: "2", backgroundColor: UIColor(red: 58/255, green: 58/255, blue: 58/255, alpha: 1.0))
+    private let button3 = ButtonComponents(title: "3", backgroundColor: UIColor(red: 58/255, green: 58/255, blue: 58/255, alpha: 1.0))
+    private let timesButton = ButtonComponents(title: "*", backgroundColor: UIColor(red: 58/255, green: 58/255, blue: 58/255, alpha: 1.0))
+    private let acButton = ButtonComponents(title: "AC", backgroundColor: UIColor(red: 58/255, green: 58/255, blue: 58/255, alpha: 1.0))
+    private let button0 = ButtonComponents(title: "0", backgroundColor: UIColor(red: 58/255, green: 58/255, blue: 58/255, alpha: 1.0))
+    private let equalButton = ButtonComponents(title: "=", backgroundColor: UIColor(red: 58/255, green: 58/255, blue: 58/255, alpha: 1.0))
+    private let divisionButton = ButtonComponents(title: "/", backgroundColor: UIColor(red: 58/255, green: 58/255, blue: 58/255, alpha: 1.0))
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        setupUI()
+    }
+    
+    /// UI 연결 및 조건 설정
+    private func setupUI() {
+        view.backgroundColor = .black
+        
+        let plusHorizontalStackView = HorizontalStackViewComponents(addButtton: [button7, button8, button9, plusButton])
+        let minusHorizontalStackView = HorizontalStackViewComponents(addButtton: [button4, button5, button6, minusButton])
+        let timesHorizontalStackView = HorizontalStackViewComponents(addButtton: [button1, button2, button3, timesButton])
+        let divisionHorizontalStackView = HorizontalStackViewComponents(addButtton: [acButton, button0, equalButton, divisionButton])
+        let verticalStackView = VerticalStackViewComponents(addStackView: [plusHorizontalStackView, minusHorizontalStackView, timesHorizontalStackView, divisionHorizontalStackView])
+        
+        [plusHorizontalStackView, minusHorizontalStackView, timesHorizontalStackView, divisionHorizontalStackView]
+            .forEach { verticalStackView.addSubview($0) }
+        
+        [resultLabel, verticalStackView]
+            .forEach { view.addSubview($0) }
+        
+        // SnapKit을 사용하여 제약 조건 설정
+        resultLabel.snp.makeConstraints {
+            $0.height.equalTo(100)
+            $0.leading.equalTo(view.snp.leading).inset(30)
+            $0.trailing.equalTo(view.snp.trailing).inset(30)
+            $0.top.equalTo(view.snp.top).inset(200)
+        }
+
+        verticalStackView.snp.makeConstraints {
+            $0.bottom.equalTo(view.snp.bottom).offset(10)
+            $0.centerX.equalTo(view.snp.centerX)
+        }
+    }
+}
+```
+
+### 트러블 슈팅
+버튼들이 보이지 않은 현상이 발생하여 디버그 Hierarchy를 확인해 본 결과 VerticalStackView에서 Height가 0으로 확인됨 따라서 제약조건에서 Height가 없는 것을 확인 하여 `topAnchor` 또는 `Height`를 주려고 함.
+
+| 화면                     | View Hierarchy                                    | Size Inspector                                |
+|--------------------------|--------------------------------------------------|-----------------------------------------------|
+| ![화면](https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FeAQMmN%2FbtsKKxy1fDP%2FDWlSdaOdflEIiKZafvxIi0%2Fimg.png) | ![View Hierarchy](https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FsOIHp%2FbtsKKaYppTO%2F3dTcCcwf8ksiWhdRKbmvOk%2Fimg.png) | ![Size Inspector](https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FclzAMQ%2FbtsKLrx1EH4%2FX9rE6JSQoCFI4KOEQx6XXk%2Fimg.png) |
+
+또한 HorizontalStackView끼리의 충돌도 예상되어 제약조건을 주었다.
+
+**제약 조건 변경 - CalculatorViewController.swift**
+```swift
+// SnapKit을 사용하여 제약 조건 설정
+resultLabel.snp.makeConstraints {
+    $0.height.equalTo(100)
+    $0.leading.trailing.equalToSuperview().inset(30)
+    $0.top.equalTo(view.snp.top).inset(200)
+}
+
+verticalStackView.snp.makeConstraints {
+    $0.top.equalTo(resultLabel.snp.bottom).offset(60)
+    $0.centerX.equalTo(view.snp.centerX)
+}
+
+plusHorizontalStackView.snp.makeConstraints {
+    $0.top.equalTo(verticalStackView.snp.top).offset(10)
+    $0.leading.equalTo(verticalStackView.snp.leading)
+    $0.trailing.equalTo(verticalStackView.snp.trailing)
+}
+minusHorizontalStackView.snp.makeConstraints {
+    $0.top.equalTo(plusHorizontalStackView.snp.bottom).offset(10)
+    $0.leading.equalTo(verticalStackView.snp.leading)
+    $0.trailing.equalTo(verticalStackView.snp.trailing)
+}
+timesHorizontalStackView.snp.makeConstraints {
+    $0.top.equalTo(minusHorizontalStackView.snp.bottom).offset(10)
+    $0.leading.equalTo(verticalStackView.snp.leading)
+    $0.trailing.equalTo(verticalStackView.snp.trailing)
+}
+divisionHorizontalStackView.snp.makeConstraints {
+    $0.top.equalTo(timesHorizontalStackView.snp.bottom).offset(10)
+    $0.leading.equalTo(verticalStackView.snp.leading)
+    $0.trailing.equalTo(verticalStackView.snp.trailing)
+}
+```
+
+## 고민할 부분
+많은 UIButton인 인스턴스들이 지저분하여 구조 개선을 하려고 한다.
+1. title을 가지는 배열로 가져 반복하여 선언하는 방식
+2. 배열안에 title과 backgroundcolor를 가지는 딕셔너리 방식
+해당 방식으로 했을 때 Action 함수는 tilte을 비교하여 Action함수를 주는 방법으로 변경하고자 한다.
+
+Level 4 - 연산 버튼 색상 변경 및 Button 구조 개선
+먼저 연산 버튼 색상을 담아줄 Utilities/Constants.swift 파일을 만들어 주고 UIColor 값을 구조체로 저장한다. 그리고 버튼 인스턴스를 리스트로 생성해 주려고 한다. 
+
+**Constants.swift**
+```swift
+import UIKit
+
+/// 색상을 담는 구조체
+struct ColorList {
+    static let darkGray = UIColor(red: 58/255, green: 58/255, blue: 58/255, alpha: 1.0)
+    static let orange = UIColor(red: 255/255, green: 149/255, blue: 0/255, alpha: 1.0)
+}
+```
+
+**CalculatorViewController.swift 변경전**
+```swift
+class CalculatorViewController: UIViewController {
+    
+    private let resultLabel = LabelComponents(title: "0")
+    private let button7 = ButtonComponents(title: "7", backgroundColor: UIColor(red: 58/255, green: 58/255, blue: 58/255, alpha: 1.0))
+    private let button8 = ButtonComponents(title: "8", backgroundColor: UIColor(red: 58/255, green: 58/255, blue: 58/255, alpha: 1.0))
+    private let button9 = ButtonComponents(title: "9", backgroundColor: UIColor(red: 58/255, green: 58/255, blue: 58/255, alpha: 1.0))
+    private let plusButton = ButtonComponents(title: "+", backgroundColor: UIColor(red: 58/255, green: 58/255, blue: 58/255, alpha: 1.0))
+    private let button4 = ButtonComponents(title: "4", backgroundColor: UIColor(red: 58/255, green: 58/255, blue: 58/255, alpha: 1.0))
+    private let button5 = ButtonComponents(title: "5", backgroundColor: UIColor(red: 58/255, green: 58/255, blue: 58/255, alpha: 1.0))
+    private let button6 = ButtonComponents(title: "6", backgroundColor: UIColor(red: 58/255, green: 58/255, blue: 58/255, alpha: 1.0))
+    private let minusButton = ButtonComponents(title: "-", backgroundColor: UIColor(red: 58/255, green: 58/255, blue: 58/255, alpha: 1.0))
+    private let button1 = ButtonComponents(title: "1", backgroundColor: UIColor(red: 58/255, green: 58/255, blue: 58/255, alpha: 1.0))
+    private let button2 = ButtonComponents(title: "2", backgroundColor: UIColor(red: 58/255, green: 58/255, blue: 58/255, alpha: 1.0))
+    private let button3 = ButtonComponents(title: "3", backgroundColor: UIColor(red: 58/255, green: 58/255, blue: 58/255, alpha: 1.0))
+    private let timesButton = ButtonComponents(title: "*", backgroundColor: UIColor(red: 58/255, green: 58/255, blue: 58/255, alpha: 1.0))
+    private let acButton = ButtonComponents(title: "AC", backgroundColor: UIColor(red: 58/255, green: 58/255, blue: 58/255, alpha: 1.0))
+    private let button0 = ButtonComponents(title: "0", backgroundColor: UIColor(red: 58/255, green: 58/255, blue: 58/255, alpha: 1.0))
+    private let equalButton = ButtonComponents(title: "=", backgroundColor: UIColor(red: 58/255, green: 58/255, blue: 58/255, alpha: 1.0))
+    private let divisionButton = ButtonComponents(title: "/", backgroundColor: UIColor(red: 58/255, green: 58/255, blue: 58/255, alpha: 1.0))
+
+    ...
+}
+```
+
+**CalculatorViewController.swift 변경후**
+```swift
+class CalculatorViewController: UIViewController {
+    
+    private let resultLabel = LabelComponents(title: "0")
+    
+    ...
+
+        /// UI 연결 및 조건 설정
+    private func setupUI() {
+        view.backgroundColor = .black
+        
+        let horizontalStackViews = createHorizontalStackView(form: ButtonData.buttonData)
+        
+        let verticalStackView = VerticalStackViewComponents(addStackView: horizontalStackViews)
+        
+        [resultLabel, verticalStackView]
+            .forEach { view.addSubview($0) }
+        
+        // SnapKit을 사용하여 제약 조건 설정
+        resultLabel.snp.makeConstraints {
+            $0.height.equalTo(100)
+            $0.leading.trailing.equalToSuperview().inset(30)
+            $0.top.equalTo(view.snp.top).inset(200)
+        }
+        
+        verticalStackView.snp.makeConstraints {
+            $0.top.equalTo(resultLabel.snp.bottom).offset(60)
+            $0.centerX.equalTo(view.snp.centerX)
+        }
+    }
+}
+```
+
+**ButtonData.swfit** 
+버튼 데이터를 저장할 파일을 하나 생성하여 버튼의 데이터를 이중 배열과 튜플을 이용하여 저장하였다. (이유: Button에 들어가는 데이터가 title과 BackgroundColor로 2개여서 튜플을 이용했고 버튼 4개에 하나의 HorizontalStackView를 가지기 때문이다.)
+```swift
+import UIKit
+
+/// 계산기 버튼 데이터
+struct ButtonData {
+    static let buttonData: [[(title: String, color: UIColor)]] = [
+        [("7", ColorList.darkGray), ("8", ColorList.darkGray), ("9", ColorList.darkGray), ("+", ColorList.darkGray)],
+        [("4", ColorList.darkGray), ("5", ColorList.darkGray), ("6", ColorList.darkGray), ("-", ColorList.darkGray)],
+        [("1", ColorList.darkGray), ("2", ColorList.darkGray), ("3", ColorList.darkGray), ("*", ColorList.darkGray)],
+        [("AC", ColorList.orange), ("0", ColorList.darkGray), ("=", ColorList.darkGray), ("/", ColorList.darkGray)]
+    ]
+}
+```
+
+**StackViewComponents.swift** 함수 추가 생성
+버튼 데이터를 받아 버튼 컴포넌트를 만들고 만든 버튼을 HorizontalStackView를 만들어줘야하기에
+createHorizontalStackView를 만들어 주었다.
+
+```swift
+import UIKit
+import SnapKit
+
+/// 4개의 버튼을 담는 HorizontalstackView
+public class HorizontalStackViewComponents: UIStackView {
+    ...
+}
+
+
+/// 버튼들이 담긴 4개의 HorizontalStackView를 담는 VerticalStackView
+public class VerticalStackViewComponents: UIStackView {
+    ...
+}
+
+/// HorizontalStackView 생성 및 버튼 구성 함수
+/// - Parameter buttonData: ButtonData를 받음(이중배열-튜플)
+/// - Returns: 버튼이 들어간 HorizontalStackView를 반환
+func createHorizontalStackView(form buttonData: [[(title: String, color: UIColor)]]) -> [HorizontalStackViewComponents] {
+    var horizontalStackView: [HorizontalStackViewComponents] = []
+    
+    for data in buttonData {
+        // 버튼 배열 생성
+        var buttons: [ButtonComponents] = []
+        
+        for (title, color) in data {
+            let button = ButtonComponents(title: title, backgroundColor: color)
+            buttons.append(button)
+        }
+        
+        let stackView = HorizontalStackViewComponents(addButtton: buttons)
+        horizontalStackView.append(stackView)
+    }
+    
+    return horizontalStackView
+}
+```
+
+### 트러블 슈팅
+버튼들이 보이지 않은 현상이 발생하여 디버그 Hierarchy를 확인해 본 결과 VerticalStackView에 HorizontalStackView가 없다는 것을 확인했다. 해당 트러블은 VerticalStackView에 넣어주는 로직이 빠져있다고 추측하여 addSubview가 확인했고, 없는 것을 확인하여 넣어주었다.
+
+| 화면                                                           | View Hierarchy                                               | Size Inspector                                               |
+|--------------------------------------------------------------|--------------------------------------------------------------|--------------------------------------------------------------|
+| ![화면](https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FeAQMmN%2FbtsKKxy1fDP%2FDWlSdaOdflEIiKZafvxIi0%2Fimg.png) | ![R1280x0](https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FcPFG9B%2FbtsKMjGQAtB%2FM1yl9ljueCdGaKK5SIgb7K%2Fimg.png) | ![R1280x0](https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FRgBr3%2FbtsKMmJ6QTa%2FXWpqzkek5KXcopukTQ4iA0%2Fimg.png) |
