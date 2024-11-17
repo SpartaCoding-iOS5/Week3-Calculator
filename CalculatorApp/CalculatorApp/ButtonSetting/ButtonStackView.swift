@@ -10,12 +10,12 @@ import UIKit
 /// 커스텀 스택뷰
 class ButtonStackView: UIStackView {
     
-    init(axix: NSLayoutConstraint.Axis = .vertical, spacing: CGFloat = 10) {
+    init(axix: NSLayoutConstraint.Axis = .horizontal) {
         super.init(frame: .zero)
         
         // 스택 뷰 기본 설정
         self.axis = axix
-        self.spacing = spacing
+        self.spacing = 10
         self.alignment = .fill
         self.distribution = .fillEqually
         self.backgroundColor = UIColor.black
@@ -23,7 +23,9 @@ class ButtonStackView: UIStackView {
     }
     
     required init(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        // fatalError는 앱을 강제 종료 시키기 때문에 super.init으로 대체
+        // 스토리보드 혹은 인터페이스 빌더에서 클래스 초기화시 객체 생성
+        super.init(coder: coder)
     }
 }
 
