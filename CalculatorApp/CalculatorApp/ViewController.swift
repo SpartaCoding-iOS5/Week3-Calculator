@@ -69,10 +69,9 @@ class ViewController: UIViewController, ButtonDataDelegate, FatalErrorTerminate 
         scrollView.addSubview(displayLabel)
                 
         NSLayoutConstraint.activate([
-            displayLabel.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
             displayLabel.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
             displayLabel.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
-            displayLabel.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor)
+            displayLabel.centerYAnchor.constraint(equalTo: scrollView.centerYAnchor)
         ])
     }
     
