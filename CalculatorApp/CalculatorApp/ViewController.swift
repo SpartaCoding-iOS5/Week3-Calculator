@@ -60,6 +60,7 @@ class ViewController: UIViewController, ButtonDataDelegate, FatalErrorTerminate 
         displayLabel.text = "0"
         displayLabel.textColor = UIColor.white
         displayLabel.textAlignment = .right
+        displayLabel.numberOfLines = 1
         displayLabel.font = UIFont.systemFont(ofSize: 60, weight: .bold)
         displayLabel.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(displayLabel)
