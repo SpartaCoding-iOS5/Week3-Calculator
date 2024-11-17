@@ -68,8 +68,10 @@ class CalculatorViewController: UIViewController {
         } else if title == "AC"{
             // "AC" 버튼 초기화 기능
             buttonTappedAction?.clearAll()
+        } else if title == "=" {
+            buttonTappedAction?.calculateResult()
         } else {
-            print("연산자")
+            buttonTappedAction?.operatorButtonTapped(sendOperator: title)
         }
     }
 }

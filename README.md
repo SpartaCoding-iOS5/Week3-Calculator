@@ -814,3 +814,156 @@ class CalculatorViewController: UIViewController {
     }
 }
 ```
+
+## Level 8 - "=" 버튼 클릭 시 계산 수행
+사칙연산자가 눌렸을 때는 라벨에 추가되고 “=“가 눌렸을 때 결과값을 출력하는 기능을 구현해야한다.
+
+따라서 아래과 같이 기능을 구현하려고 한다. (Model에 정의)
+1. 연산자가 눌렸을 때 해당 값을 저장하는 (previousValue) 프로퍼티를 만들어준다.
+2. 연산자가 눌렸을때 현재 연산자 프로퍼티에 저장을하고 다음 연산자가 눌렸을 때 계산한 값이 이전 값(previousValue) 프로퍼티에 넣어준다.
+3. 이 과정이 반복되고 “=“ 버튼이 눌렸을 때 결과값을 나타낸다.
+
+**Model/CalculatorModel.swift**
+```swift
+/// 계산기 상태를 관리하는 구조체
+struct CalculatorModel {
+    var currentInput: String = "0"  // 현재 입력 중인 값
+    var previousValue: Int?         // 이전 계산 값
+    var currentOperator: String?    // 현재 연산자
+    
+    /// AC버튼으로 초기화
+    mutating func clear() {
+        ...
+    }
+    
+    /// 결과값 계산
+    mutating func calculateResult() -> String? {
+        // 옵셔널 해제 과정
+        guard let currnetValuse = Int(currentInput),
+              let previousValue = previousValue,
+              let operation = currentOperator else {
+            print("이전 값, 입력값, 현재 연산자 중 없는게 있음")
+            return nil
+        }
+        
+        let result: Int
+        
+        switch operation {
+        case "+":
+            result = previousValue + currnetValuse
+        case "-":
+            result = previousValue - currnetValuse
+        case "*":
+            result = previousValue * currnetValuse
+        case "/":
+            result = previousValue / currnetValuse
+        default:
+            return nil
+        }
+        
+        self.previousValue = result
+        self.currentOperator = nil
+        self.currentInput = "\(result)"
+        return "\(result)"
+    }
+    
+    /// 연산자 처리
+    mutating func handleOperator(_ sendOperator: String) {
+        if let currentValue = Int(currentInput) {
+            if previousValue == nil {
+                // 이전 값이 없으면 현재 값을 이전 값으로 저장
+                previousValue = currentValue
+            } else if let operation = currentOperator {
+                // 이전 연산자 계산 수행
+                let result = calculateResult()
+            }
+        }
+        
+        // 연산자 저장 및 입력 초기화
+        currentOperator = sendOperator
+        currentInput = "0"
+    }
+}
+```
+
+**func calculateResult()** 함수는 
+1. guard문으로 현재 값, 이전 계산 값,  현재 연산자가 없으면 nil을 반환하여 계산하지 않고 만족하면 계산한다.
+2. 계산할때 연산자에 맞게 연산한다.
+3. 연산 된 후 이전값에 결과 값을 저장하고, 연산자는 nil, 현재 입력값에도 결과값을 주어 화면에 결과값이 나오는 함수를 만들었습니다.
+
+**func handleOperator()** 함수는
+1. 이전 값이 없으면 현재 값을 이전 값으로 저장한다.
+2. 이전 연산자 계산을 수행한다.
+3. 새로 받은 연산자를 이전 연산자 변수에 저장한다.
+4. 현재 입력받은 값은 없앤다.
+
+**CalculatorViewController.swift** 수정
+```swift
+import UIKit
+import SnapKit
+
+
+/// 계산기 최상단 화면 (RootView)
+class CalculatorViewController: UIViewController {
+        ...
+    }
+    
+    
+    /// UI 연결 및 조건 설정
+    private func setupUI() {
+        ...
+    }
+    
+    /// 버튼 동작하는 기능 구현
+    /// - Parameter sender: UIButton
+    @objc private func buttonTapped(_ sender: UIButton) {
+        guard let title = sender.title(for: .normal) else { return }
+        
+        if let num = Int(title) {
+            // 숫자 버튼인지 확인 후 기능
+            buttonTappedAction?.numberButtonTapped(number: title)
+        } else if title == "AC"{
+            // "AC" 버튼 초기화 기능
+            buttonTappedAction?.clearAll()
+        } else if title == "=" {
+            buttonTappedAction?.calculateResult()
+        } else {
+            buttonTappedAction?.operatorButtonTapped(sendOperator: title)
+        }
+    }
+}
+```
+
+## 예외 상황 시나리오 설정하기
+1. 0 으로 나누었을 때 crashed
+
+**Model/CalculatorModel.swift** 수정
+```swift
+import Foundation
+
+/// 계산기 상태를 관리하는 구조체
+struct CalculatorModel {
+    ...
+        let result: Int
+        
+        switch operation {
+        case "+":
+            result = previousValue + currnetValuse
+        case "-":
+            result = previousValue - currnetValuse
+        case "*":
+            result = previousValue * currnetValuse
+        case "/":
+            // 예외처리 : 나누는 값이 0이면 0
+            result = currnetValuse == 0 ? 0 : previousValue / currnetValuse
+        default:
+            return nil
+        }
+        
+        self.previousValue = result
+        self.currentOperator = nil
+        self.currentInput = "\(result)"
+        return "\(result)"
+    }
+}
+```

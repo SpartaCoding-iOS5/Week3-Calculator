@@ -28,6 +28,18 @@ class ButtonTappedAction {
         updateLabel()
     }
     
+    /// 연산자 버튼 입력 기능
+    func operatorButtonTapped(sendOperator: String) {
+        calculatorModel.handleOperator(sendOperator)
+        updateLabel()
+    }
+    
+    func calculateResult() {
+        if let result = calculatorModel.calculateResult() {
+            updateLabel()
+        }
+    }
+    
     /// 초기화 기능
     func clearAll() {
         calculatorModel.clear()
