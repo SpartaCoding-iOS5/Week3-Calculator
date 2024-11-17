@@ -11,6 +11,8 @@ class ViewController: UIViewController, ButtonDataDelegate, FatalErrorTerminate 
     
     private let displayLabel: UILabel = UILabel()
     
+    private let scrollView = UIScrollView()
+    
     private let buttons = ButtonData()
     
     private let calculator = Calculator()
