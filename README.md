@@ -605,3 +605,126 @@ func createHorizontalStackView(form buttonData: [[(title: String, color: UIColor
 | 화면                                                           | View Hierarchy                                               | Size Inspector                                               |
 |--------------------------------------------------------------|--------------------------------------------------------------|--------------------------------------------------------------|
 | ![화면](https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FeAQMmN%2FbtsKKxy1fDP%2FDWlSdaOdflEIiKZafvxIi0%2Fimg.png) | ![R1280x0](https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FcPFG9B%2FbtsKMjGQAtB%2FM1yl9ljueCdGaKK5SIgb7K%2Fimg.png) | ![R1280x0](https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FRgBr3%2FbtsKMmJ6QTa%2FXWpqzkek5KXcopukTQ4iA0%2Fimg.png) |
+
+## Level 5 - 버튼 원형 설정
+Level 5의 요구사항대로 버튼 컴포넌트에서 conerRadius = 40을 주어 원형이 될 수 있도록 설정했다.
+**View/ButtonComponents.swift**
+```swift
+import UIKit
+import SnapKit
+
+/// 게산기 버튼 커스텀 UI 컴포넌트
+public class ButtonComponents: UIButton {
+    
+    /// 계산기 버튼 컴포넌트 초기화
+    /// - Parameters:
+    ///   - title: 버튼의 숫자 및 연산자
+    ///   - backgroundColor: 버튼 색상
+    init(title: String, backgroundColor: UIColor) {
+        ...
+        self.layer.cornerRadius = 40
+    }
+    
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+    }
+}
+```
+
+## Level 6 -  버튼 클릭 시 라벨에 표시 설정
+Level 6부터는 숫자 버튼이 입력되었을때 라벨에 표시되어야하는 요구사항이였다.
+따라서 해당하는 버튼은 `title`을 확인하여 String값을 붙여주는 로직을 짜주었다.
+
+먼저 들어가는 프로퍼티를 모델로 정의해주었고 ButtonTapped의 파일을 만들어서 눌렸을때의 기능을 하는 함수를 모아두고자 만들고 작성하였다.
+
+**Model/CalculatorModel.swift**
+```swift
+import Foundation
+
+// 계산기 상태를 관리하는 구조체
+struct CalculatorModel {
+    var currentInput: String = "0"  // 현재 입력 중인 값
+    var previousValue: Int?         // 이전 계산 값
+    var currentOperator: String?    // 현재 연산자
+}
+```
+
+**Controller/ButtonTappedAction.swift**
+```swift
+import UIKit
+
+/// 버튼 액션 관리 클래스
+class ButtonTappedAction {
+    
+    private var calculatorModel: CalculatorModel
+    private let resultLabel: LabelComponents
+    
+    init(calculatorModel: CalculatorModel, resultLabel: LabelComponents) {
+        self.calculatorModel = calculatorModel
+        self.resultLabel = resultLabel
+    }
+
+    /// 숫자 버튼이 눌렀을 때 호출
+    func numberButtonTapped(number: String) {
+        if calculatorModel.currentInput == "0" {
+            calculatorModel.currentInput = number
+        } else {
+            calculatorModel.currentInput += number
+        }
+        
+        // 모델 업데이트 후 라벨 변경
+        resultLabel.text = calculatorModel.currentInput
+    }
+}
+
+```
+
+함수의 로직은 현재 라벨의 값이 0이면 입력받은 값을 띄워주고 아니면 현재 라벨의 값에 붙여줘서 띄워준다.
+
+**Controller/CalculatorViewController.swift** 연결하기
+```swift
+/// 계산기 최상단 화면 (RootView)
+class CalculatorViewController: UIViewController {
+    
+    ...
+    private var buttonTappedAction: ButtonTappedAction?
+    private var calculatorModel = CalculatorModel()
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        // buttonTappedAction 초기화
+        buttonTappedAction = ButtonTappedAction(calculatorModel: calculatorModel, resultLabel: resultLabel)
+        
+        setupUI()
+    }
+    
+    
+    /// UI 연결 및 조건 설정
+    private func setupUI() {
+        ...
+        // 버튼 액션 연결
+        for stackView in horizontalStackViews {
+            for button in stackView.arrangedSubviews {
+                if let button = button as? UIButton {
+                    button.addTarget(self, action: #selector(buttonTapped(_:)), for: .touchUpInside)
+                }
+            }
+        }
+    }
+    
+    @objc private func buttonTapped(_ sender: UIButton) {
+        guard let title = sender.title(for: .normal) else { return }
+        
+        if let num = Int(title) {
+            // 숫자 버튼인지 확인 후 기능
+            buttonTappedAction?.numberButtonTapped(number: title)
+        } else {
+            // 연산자 버튼 구현
+            print("연산자")
+        }
+    }
+}
+```
+
+Model과 ButtonTappedAction을 연결시켜주고 해당하는 버튼이 들어갔을때 addTarget되게 하였다.

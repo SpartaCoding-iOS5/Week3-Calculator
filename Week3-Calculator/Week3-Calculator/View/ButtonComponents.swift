@@ -22,7 +22,7 @@ public class ButtonComponents: UIButton {
         self.titleLabel?.font = UIFont.boldSystemFont(ofSize: 30)
         self.frame.size.width = 80
         self.frame.size.height = 80
-        // self.layer.cornerRadius = 40
+        self.layer.cornerRadius = 40
     }
     
     required init?(coder: NSCoder) {

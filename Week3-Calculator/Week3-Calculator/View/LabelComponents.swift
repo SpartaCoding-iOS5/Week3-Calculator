@@ -14,7 +14,7 @@ class LabelComponents: UILabel {
     /// - Parameter title: 화면 숫자 값
     init(title: String) {
         super.init(frame: .zero)
-        self.text = "12345"
+        self.text = "0"
         self.textColor = .white
         self.textAlignment = .right
         self.font = .systemFont(ofSize: 60, weight: .bold)
