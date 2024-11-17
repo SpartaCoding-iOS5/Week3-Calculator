@@ -106,7 +106,7 @@ class ViewController: UIViewController, ButtonDataDelegate, FatalErrorTerminate 
         
         NSLayoutConstraint.activate([
             numberButtonsStack.widthAnchor.constraint(equalToConstant: 350),
-            numberButtonsStack.topAnchor.constraint(equalTo: displayLabel.bottomAnchor, constant: 60),
+            numberButtonsStack.topAnchor.constraint(equalTo: scrollView.bottomAnchor, constant: 60),
             numberButtonsStack.centerXAnchor.constraint(equalTo: view.centerXAnchor)
         ])
     }
