@@ -122,6 +122,9 @@ class ViewController: UIViewController, ButtonDataDelegate, FatalErrorTerminate 
         if text == "AC" {
             self.displayLabel.text = "0"
             
+            // AC를 누르면 스크롤뷰의 위치가 초기화되도록 설정
+            resetContentViewOffset()
+            
         } else if text == "=" {
             // 현재 레이블의 값이 0이 아니고 값이 존재하는지 확인
             // 아닐 경우 계산을 진행하지 않음
@@ -141,6 +144,9 @@ class ViewController: UIViewController, ButtonDataDelegate, FatalErrorTerminate 
             
             self.displayLabel.text = (displayLabel.text == "0") ? text : (displayLabel.text ?? "") + text
         }
+        
+        // 버튼을 눌러 레이블 값이 변경되면 스크롤뷰에 업데이트 사항을 추가
+        updateContentViewOffset()
     }
     
     /// 치명적인 에러가 발생할 경우 앱을 우아하게 종료시키는 메소드
@@ -184,5 +190,14 @@ class ViewController: UIViewController, ButtonDataDelegate, FatalErrorTerminate 
                 self.scrollView.setContentOffset(CGPoint(x: newOffsetX, y: 0), animated: true)
             }
         }
+    }
+    
+    /// 스크롤뷰의 위치를 초기화 시키는 메소드
+    ///
+    /// 컨텐츠뷰의 크기를 스크롤뷰보다 작게하여 값을 초기화
+    ///
+    /// ``updateContentViewOffset()``
+    private func resetContentViewOffset() {
+        scrollView.contentSize.width = scrollView.bounds.width - 100
     }
 }
