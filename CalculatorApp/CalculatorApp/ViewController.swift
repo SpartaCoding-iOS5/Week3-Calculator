@@ -35,9 +35,9 @@ class ViewController: UIViewController, ButtonDataDelegate, FatalErrorTerminate 
         // fatalError
         calculator.terminate = self
         
+        setupScrollView()
         setupDisplayLabel()
         setupVStack()
-        setupScrollView()
     }
     
     /// 스크롤뷰 기본세팅 메소드
