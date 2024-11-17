@@ -11,5 +11,11 @@ struct CalculatorModel {
     var currentInput: String = "0"  // 현재 입력 중인 값
     var previousValue: Int?         // 이전 계산 값
     var currentOperator: String?    // 현재 연산자
+    
+    mutating func clear() {
+        currentInput = "0"
+        previousValue = nil
+        currentOperator = nil
+    }
 }
     

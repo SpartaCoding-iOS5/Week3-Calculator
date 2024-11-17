@@ -728,3 +728,89 @@ class CalculatorViewController: UIViewController {
 ```
 
 Model과 ButtonTappedAction을 연결시켜주고 해당하는 버튼이 들어갔을때 addTarget되게 하였다.
+
+## Level 7 버튼 구현 중
+
+**Model/CalculatorModel.swift** 
+```swift
+import Foundation
+
+// 계산기 상태를 관리하는 구조체
+struct CalculatorModel {
+    var currentInput: String = "0"  // 현재 입력 중인 값
+    var previousValue: Int?         // 이전 계산 값
+    var currentOperator: String?    // 현재 연산자
+    
+    mutating func clear() {
+        currentInput = "0"
+        previousValue = nil
+        currentOperator = nil
+    }
+}
+```
+
+**Controller/ButtonTappedAction.swift**
+해당 기능 후 라벨 변경하는 코드가 똑같기 때문에 결과값의 라벨을 업데이트 하는 함수를 따로 빼서 연결했다.
+```swift
+import UIKit
+
+/// 버튼 액션 관리 클래스
+class ButtonTappedAction {
+    
+    private var calculatorModel: CalculatorModel
+    private let resultLabel: LabelComponents
+    
+    init(calculatorModel: CalculatorModel, resultLabel: LabelComponents) {
+        self.calculatorModel = calculatorModel
+        self.resultLabel = resultLabel
+    }
+
+    /// 숫자 버튼 입력 기능
+    func numberButtonTapped(number: String) {
+        if calculatorModel.currentInput == "0" {
+            calculatorModel.currentInput = number
+        } else {
+            calculatorModel.currentInput += number
+        }
+        updateLabel()
+    }
+    
+    /// 초기화 기능
+    func clearAll() {
+        calculatorModel.clear()
+        updateLabel()
+    }
+    
+    /// 라벨 업데이트
+    func updateLabel() {
+        resultLabel.text = calculatorModel.currentInput
+    }
+}
+```
+
+**Controller/CalculatorViewController.swift** - buttonTapped 수
+```swift
+import UIKit
+import SnapKit
+
+
+/// 계산기 최상단 화면 (RootView)
+class CalculatorViewController: UIViewController {
+    ...
+    /// 버튼 동작하는 기능 구현
+    /// - Parameter sender: UIButton
+    @objc private func buttonTapped(_ sender: UIButton) {
+        guard let title = sender.title(for: .normal) else { return }
+        
+        if let num = Int(title) {
+            // 숫자 버튼인지 확인 후 기능
+            buttonTappedAction?.numberButtonTapped(number: title)
+        } else if title == "AC"{
+            // "AC" 버튼 초기화 기능
+            buttonTappedAction?.clearAll()
+        } else {
+            print("연산자")
+        }
+    }
+}
+```

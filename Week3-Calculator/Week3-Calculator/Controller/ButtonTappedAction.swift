@@ -18,15 +18,24 @@ class ButtonTappedAction {
         self.resultLabel = resultLabel
     }
 
-    /// 숫자 버튼이 눌렀을 때 호출
+    /// 숫자 버튼 입력 기능
     func numberButtonTapped(number: String) {
         if calculatorModel.currentInput == "0" {
             calculatorModel.currentInput = number
         } else {
             calculatorModel.currentInput += number
         }
-        
-        // 모델 업데이트 후 라벨 변경
+        updateLabel()
+    }
+    
+    /// 초기화 기능
+    func clearAll() {
+        calculatorModel.clear()
+        updateLabel()
+    }
+    
+    /// 라벨 업데이트
+    func updateLabel() {
         resultLabel.text = calculatorModel.currentInput
     }
 }

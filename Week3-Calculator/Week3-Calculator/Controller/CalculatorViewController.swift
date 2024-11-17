@@ -57,16 +57,23 @@ class CalculatorViewController: UIViewController {
         }
     }
     
+    /// 버튼 동작하는 기능 구현
+    /// - Parameter sender: UIButton
     @objc private func buttonTapped(_ sender: UIButton) {
         guard let title = sender.title(for: .normal) else { return }
         
         if let num = Int(title) {
             // 숫자 버튼인지 확인 후 기능
             buttonTappedAction?.numberButtonTapped(number: title)
+        } else if title == "AC"{
+            // "AC" 버튼 초기화 기능
+            buttonTappedAction?.clearAll()
         } else {
-            // 연산자 버튼 구현
             print("연산자")
         }
     }
 }
 
+#Preview("ViewController") {
+    CalculatorViewController()
+}
