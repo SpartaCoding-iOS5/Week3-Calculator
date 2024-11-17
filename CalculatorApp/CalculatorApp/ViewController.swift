@@ -40,6 +40,7 @@ class ViewController: UIViewController, ButtonDataDelegate, FatalErrorTerminate 
         setupScrollView()
     }
     
+    /// 스크롤뷰 기본세팅 메소드
     private func setupScrollView() {
         scrollView.backgroundColor = .black
         scrollView.contentAlignmentPoint.x = 1
@@ -170,6 +171,18 @@ class ViewController: UIViewController, ButtonDataDelegate, FatalErrorTerminate 
         alert.addAction(terminateAction)
         self.present(alert, animated: true) {
             self.compulsoryTermination(second: 5.0)
+        }
+    }
+    
+    /// 현재 스크롤뷰의 컨텐츠 위치를 업데이트 시키는 메소드
+    ///
+    /// 버튼을 누르면 컨텐츠뷰의 사이즈를 계산하여 자동으로 offset 값 변경
+    private func updateContentViewOffset() {
+        if scrollView.contentSize.width >= scrollView.bounds.width {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
+                let newOffsetX = max(0, self.scrollView.contentSize.width - self.scrollView.bounds.width)
+                self.scrollView.setContentOffset(CGPoint(x: newOffsetX, y: 0), animated: true)
+            }
         }
     }
 }
