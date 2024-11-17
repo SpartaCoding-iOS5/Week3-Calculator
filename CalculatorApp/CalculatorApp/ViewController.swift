@@ -40,7 +40,19 @@ class ViewController: UIViewController, ButtonDataDelegate, FatalErrorTerminate 
     }
     
     private func setupScrollView() {
+        scrollView.backgroundColor = .black
+        scrollView.contentAlignmentPoint.x = 1
+        scrollView.showsVerticalScrollIndicator = false
+        scrollView.showsHorizontalScrollIndicator = false
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(scrollView)
         
+        NSLayoutConstraint.activate([
+            scrollView.heightAnchor.constraint(equalToConstant: 100),
+            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 30),
+            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -30),
+            scrollView.topAnchor.constraint(equalTo: view.topAnchor, constant: 200)
+        ])
     }
 
     ///  숫자 및 수식 입력, displayLabel의 기본 세팅
