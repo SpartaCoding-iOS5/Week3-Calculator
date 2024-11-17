@@ -62,13 +62,13 @@ class ViewController: UIViewController, ButtonDataDelegate, FatalErrorTerminate 
         displayLabel.textAlignment = .right
         displayLabel.font = UIFont.systemFont(ofSize: 60, weight: .bold)
         displayLabel.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(displayLabel)
+        scrollView.addSubview(displayLabel)
                 
         NSLayoutConstraint.activate([
-            displayLabel.heightAnchor.constraint(equalToConstant: 100),
-            displayLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 30),
-            displayLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -30),
-            displayLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 200)
+            displayLabel.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
+            displayLabel.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
+            displayLabel.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
+            displayLabel.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor)
         ])
     }
     
