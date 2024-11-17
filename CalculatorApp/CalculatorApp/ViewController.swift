@@ -38,6 +38,10 @@ class ViewController: UIViewController, ButtonDataDelegate, FatalErrorTerminate 
         setDisplayLabel()
         setVStack()
     }
+    
+    private func setupScrollView() {
+        
+    }
 
     ///  숫자 및 수식 입력, displayLabel의 기본 세팅
     private func setDisplayLabel() {
