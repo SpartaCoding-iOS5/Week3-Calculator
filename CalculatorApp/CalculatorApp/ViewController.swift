@@ -37,6 +37,7 @@ class ViewController: UIViewController, ButtonDataDelegate, FatalErrorTerminate 
         
         setupDisplayLabel()
         setupVStack()
+        setupScrollView()
     }
     
     private func setupScrollView() {
