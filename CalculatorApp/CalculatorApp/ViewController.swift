@@ -35,8 +35,8 @@ class ViewController: UIViewController, ButtonDataDelegate, FatalErrorTerminate 
         // fatalError
         calculator.terminate = self
         
-        setDisplayLabel()
-        setVStack()
+        setupDisplayLabel()
+        setupVStack()
     }
     
     private func setupScrollView() {
@@ -44,7 +44,7 @@ class ViewController: UIViewController, ButtonDataDelegate, FatalErrorTerminate 
     }
 
     ///  숫자 및 수식 입력, displayLabel의 기본 세팅
-    private func setDisplayLabel() {
+    private func setupDisplayLabel() {
         displayLabel.text = "0"
         displayLabel.textColor = UIColor.white
         displayLabel.textAlignment = .right
@@ -64,7 +64,7 @@ class ViewController: UIViewController, ButtonDataDelegate, FatalErrorTerminate 
     /// - Parameter stackViews: 아이템을 추가할 스택뷰 배열
     ///
     /// ``setButtonRow(_:)``
-    private func setHStack(_ stackViews: [UIStackView]) {
+    private func setupHStack(_ stackViews: [UIStackView]) {
         for (index, stackView) in stackViews.enumerated() {
             let item = buttons.setButtonRow(buttons.buttonRowList)
             stackView.addArrangedSubviews(item[index])
@@ -74,8 +74,8 @@ class ViewController: UIViewController, ButtonDataDelegate, FatalErrorTerminate 
     /// vertical 스택뷰를 세팅하는 메소드
     ///
     /// ``setHStack(_:)``
-    private func setVStack() {
-        setHStack([firstRowStack,
+    private func setupVStack() {
+        setupHStack([firstRowStack,
                    secondRowStack,
                    thirdRowStack,
                    fourthRowStack])
