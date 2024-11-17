@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+class ViewController: UIViewController, ButtonDataDelegate {
     
     private let displayLabel: UILabel = UILabel()
     
@@ -25,13 +25,16 @@ class ViewController: UIViewController {
         
         view.backgroundColor = .black
         
+        // 델리게이트 프로퍼티 초기화
+        buttons.deleget = self
+        
         setDisplayLabel()
         setVStack()
     }
 
     ///  숫자 및 수식 입력, displayLabel의 기본 세팅
     private func setDisplayLabel() {
-        displayLabel.text = "12345"
+        displayLabel.text = "0"
         displayLabel.textColor = UIColor.white
         displayLabel.textAlignment = .right
         displayLabel.font = UIFont.systemFont(ofSize: 60, weight: .bold)
@@ -79,5 +82,9 @@ class ViewController: UIViewController {
             numberButtonsStack.topAnchor.constraint(equalTo: displayLabel.bottomAnchor, constant: 60),
             numberButtonsStack.centerXAnchor.constraint(equalTo: view.centerXAnchor)
         ])
+    }
+    
+    func didTapButton(with text: String) {
+        self.displayLabel.text = (displayLabel.text == "0") ? text : (displayLabel.text ?? "") + text
     }
 }
