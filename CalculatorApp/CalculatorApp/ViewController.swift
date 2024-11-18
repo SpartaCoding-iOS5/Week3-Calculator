@@ -13,6 +13,8 @@ class ViewController: UIViewController, ButtonDataDelegate {
     
     private let buttons = ButtonData()
     
+    private let calculator = Calculator()
+    
     private let firstRowStack = ButtonStackView()
     private let secondRowStack = ButtonStackView()
     private let thirdRowStack = ButtonStackView()
@@ -95,6 +97,15 @@ class ViewController: UIViewController, ButtonDataDelegate {
     func didTapButton(with text: String) {
         if text == "AC" {
             self.displayLabel.text = "0"
+        } else if text == "=" {
+            // 현재 레이블의 값이 0이 아니고 값이 존재하는지 확인
+            // 아닐 경우 계산을 진행하지 않음
+            guard self.displayLabel.text != "0" && self.displayLabel.text?.count ?? 0 > 0 else {
+                return
+            }
+            
+            let resultCalculate = self.calculator.calculate(expression: displayLabel.text!)
+            self.displayLabel.text = resultCalculate == nil ? "Error" : String(resultCalculate!)
         } else {
             self.displayLabel.text = (displayLabel.text == "0") ? text : (displayLabel.text ?? "") + text
         }
