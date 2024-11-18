@@ -7,22 +7,22 @@
 
 import UIKit
 
-class ViewController: UIViewController, ButtonDataDelegate, FatalErrorTerminate {
+class ViewController: UIViewController, ButtonManagerDelegate, FatalErrorTerminate {
     
     private let displayLabel: UILabel = UILabel()
     
     private let scrollView = UIScrollView()
     
-    private let buttons = ButtonData()
+    private let buttons = ButtonManager()
     
     private let calculator = Calculator()
     
-    private let firstRowStack = ButtonStackView()
-    private let secondRowStack = ButtonStackView()
-    private let thirdRowStack = ButtonStackView()
-    private let fourthRowStack = ButtonStackView()
+    private let firstRowStack = HStackView()
+    private let secondRowStack = HStackView()
+    private let thirdRowStack = HStackView()
+    private let fourthRowStack = HStackView()
     
-    private let numberButtonsStack = ButtonStackView(axix: .vertical)
+    private let numberButtonsStack = HStackView(axix: .vertical)
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -30,7 +30,7 @@ class ViewController: UIViewController, ButtonDataDelegate, FatalErrorTerminate 
         view.backgroundColor = .black
         
         // 델리게이트 프로퍼티 초기화
-        buttons.deleget = self
+        buttons.delegate = self
         
         // fatalError
         calculator.terminate = self
@@ -132,7 +132,7 @@ class ViewController: UIViewController, ButtonDataDelegate, FatalErrorTerminate 
                 return
             }
             
-            let resultCalculate = self.calculator.calculate(expression: displayLabel.text!)
+            let resultCalculate = self.calculator.calculate()
             self.displayLabel.text = resultCalculate == nil ? "Error" : String(resultCalculate!)
             
         } else {
@@ -147,6 +147,9 @@ class ViewController: UIViewController, ButtonDataDelegate, FatalErrorTerminate 
         
         // 버튼을 눌러 레이블 값이 변경되면 스크롤뷰에 업데이트 사항을 추가
         updateContentViewOffset()
+        
+        // 버튼을 누르면 현재 레이블의 값을 계산기에 추가
+        self.calculator.currentInput = self.displayLabel.text
     }
     
     /// 치명적인 에러가 발생할 경우 앱을 우아하게 종료시키는 메소드
@@ -198,6 +201,7 @@ class ViewController: UIViewController, ButtonDataDelegate, FatalErrorTerminate 
     ///
     /// ``updateContentViewOffset()``
     private func resetContentViewOffset() {
+        self.displayLabel.frame.size.width = 40
         scrollView.contentSize.width = self.displayLabel.frame.width
     }
 }
