@@ -198,6 +198,6 @@ class ViewController: UIViewController, ButtonDataDelegate, FatalErrorTerminate 
     ///
     /// ``updateContentViewOffset()``
     private func resetContentViewOffset() {
-        scrollView.contentSize.width = scrollView.bounds.width - 100
+        scrollView.contentSize.width = self.displayLabel.frame.width
     }
 }
