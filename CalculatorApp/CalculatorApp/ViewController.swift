@@ -52,7 +52,7 @@ class ViewController: UIViewController, ButtonDataDelegate {
     /// 다수의 스택뷰에 아이템을 추가하는 메소드
     /// - Parameter stackViews: 아이템을 추가할 스택뷰 배열
     ///
-    /// ``setButtonRow``
+    /// ``setButtonRow(_:)``
     private func setHStack(_ stackViews: [UIStackView]) {
         for (index, stackView) in stackViews.enumerated() {
             let item = buttons.setButtonRow(buttons.buttonRowList)
@@ -62,7 +62,7 @@ class ViewController: UIViewController, ButtonDataDelegate {
     
     /// vertical 스택뷰를 세팅하는 메소드
     ///
-    /// ``setHStack``
+    /// ``setHStack(_:)``
     private func setVStack() {
         setHStack([firstRowStack,
                    secondRowStack,
@@ -84,7 +84,19 @@ class ViewController: UIViewController, ButtonDataDelegate {
         ])
     }
     
+    /// 델리게이트를 통해 레이블의 값을 변경하는 메소드
+    /// - Parameter text: 버튼액션으로 넘어오는 버튼의 타이틀 값(String)
+    ///
+    /// **조건 1.** 파라미터 값이 AC일 경우 - 레이블 값을 0으로 초기화
+    ///
+    /// **조건 2.** 파라미터 값이 AC가 아닐 경우 - 레이블 값을 변경 혹은 추가
+    ///
+    /// ``passDataToDelegate(_:)``
     func didTapButton(with text: String) {
-        self.displayLabel.text = (displayLabel.text == "0") ? text : (displayLabel.text ?? "") + text
+        if text == "AC" {
+            self.displayLabel.text = "0"
+        } else {
+            self.displayLabel.text = (displayLabel.text == "0") ? text : (displayLabel.text ?? "") + text
+        }
     }
 }
