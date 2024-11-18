@@ -11,6 +11,8 @@ class Calculator {
     
     weak var terminate: FatalErrorTerminate?
     
+    var currentInput: String?
+    
     /// 레이블의 값을 계산하는 메소드
     /// - Parameter expression: 레이블의 값을 파라미터로 받는다
     /// - Returns: 에러가 있다면 에러를 반환하고 아니라면 계산 결과를 반환한다.
@@ -22,11 +24,11 @@ class Calculator {
     ///
     /// ``inputCheck(_:)``
     /// ``CalculatorError``
-    func calculate(expression: String) -> Int? {
+    func calculate() -> Int? {
         var answer: Int?
         
         do {
-            answer = try inputCheck(expression)
+            answer = try inputCheck(self.currentInput ?? "")
             
         } catch CalculatorError.lackOfValue {
             print(CalculatorError.lackOfValue.errorDescription)

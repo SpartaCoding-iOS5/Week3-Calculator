@@ -7,6 +7,6 @@
 
 import UIKit
 
-protocol ButtonDataDelegate: AnyObject {
+protocol ButtonManagerDelegate: AnyObject {
     func didTapButton(with text: String)
 }
