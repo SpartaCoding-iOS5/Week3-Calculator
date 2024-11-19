@@ -8,7 +8,7 @@
 import UIKit
 
 /// 버튼의 데이터를 관리하는 메소드
-class ButtonManager {
+final class ButtonManager {
     
     // 계산기에 들어갈 버튼 선언
     private let firstRow = ["7", "8", "9", "+"]
@@ -86,7 +86,32 @@ class ButtonManager {
     /// ``didTapButton``
     @objc private func passDataToDelegate(_ button: UIButton) {
         guard let text = button.titleLabel?.text else { return }
-        delegate?.didTapButton(with: text)
+        
+        // 현재 입력의 상태를 확인 후 반환
+        let status = changeButtonState(with: text)
+        
+        delegate?.didTapButton(with: status)
+    }
+}
+
+fileprivate extension ButtonManager {
+    /// 현재 입력의 상태를 확인하는 메소드
+    /// - Parameter text: 현재 입력된 값(버튼)
+    /// - Returns: 입력상태를 반환
+    func changeButtonState(with text: String) -> InputStatus {
+        var status: InputStatus
+        
+        if text == "AC" {
+            status = .AC
+            
+        } else if text == "=" {
+            status = .calculate
+            
+        } else {
+            status = .input(currentInput: text)
+        }
+        
+        return status
     }
 }
 

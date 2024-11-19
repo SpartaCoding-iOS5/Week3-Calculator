@@ -7,7 +7,7 @@
 
 import UIKit
 
-class Calculator {
+final class Calculator {
     
     weak var terminate: FatalErrorTerminate?
     

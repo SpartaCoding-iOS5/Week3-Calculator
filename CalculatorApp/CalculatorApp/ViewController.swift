@@ -88,7 +88,7 @@ final class ViewController: UIViewController, ButtonManagerDelegate, FatalErrorT
     
     /// vertical 스택뷰를 세팅하는 메소드
     ///
-    /// ``setHStack(_:)``
+    /// ``setupHStack(_:)``
     private func setupVStack() {
         setupHStack([firstRowStack,
                    secondRowStack,
@@ -118,37 +118,32 @@ final class ViewController: UIViewController, ButtonManagerDelegate, FatalErrorT
     /// **조건 2.** 파라미터 값이 AC가 아닐 경우 - 레이블 값을 변경 혹은 추가
     ///
     /// ``passDataToDelegate(_:)``
-    func didTapButton(with text: String) {
-        if text == "AC" {
+    func didTapButton(with status: InputStatus) {
+        switch status {
+        case .AC:
             self.displayLabel.text = "0"
             
             // AC를 누르면 스크롤뷰의 위치가 초기화되도록 설정
             resetContentViewOffset()
-            
-        } else if text == "=" {
+
+        case .calculate where (self.displayLabel.text != "0" && self.displayLabel.text?.count ?? 0 > 0):
             // 현재 레이블의 값이 0이 아니고 값이 존재하는지 확인
             // 아닐 경우 계산을 진행하지 않음
-            guard self.displayLabel.text != "0" && self.displayLabel.text?.count ?? 0 > 0 else {
-                return
-            }
-            
             let resultCalculate = self.calculator.calculate()
             self.displayLabel.text = resultCalculate == nil ? "Error" : String(resultCalculate!)
             
-            
-        } else if checkOperator(text) {
+        case let .input(currentInput) where checkOperator(currentInput):
             // 연산자 중복을 방지
             // 만약 현재 레이블의 마지막 값이 연산자라면, 새로운 연산자로 변경
-            changeOperator(text)
+            changeOperator(currentInput)
             
-        } else {
-            // 현재 레이블의 값이 에러가 아니라면 텍스트 추가
-            // AC를 통해 초기화 가능
-            guard self.displayLabel.text != "Error" else {
-                return
-            }
+        case let .input(currentInput) where (self.displayLabel.text != "Error"):
+            // 입력이 정수이고 현재 레이블 값이 Error가 아닐 경우
+            // 현재 레이블값에 입력된 값을 추가 혹은 변경
+            self.displayLabel.text = (self.displayLabel.text == "0") ? currentInput : (self.displayLabel.text ?? "") + currentInput
             
-            self.displayLabel.text = (displayLabel.text == "0") ? text : (displayLabel.text ?? "") + text
+        default:
+            break
         }
         
         // 버튼을 눌러 레이블 값이 변경되면 스크롤뷰에 업데이트 사항을 추가

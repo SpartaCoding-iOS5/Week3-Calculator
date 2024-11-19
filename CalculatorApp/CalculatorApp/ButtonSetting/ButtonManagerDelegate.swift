@@ -8,5 +8,5 @@
 import UIKit
 
 protocol ButtonManagerDelegate: AnyObject {
-    func didTapButton(with text: String)
+    func didTapButton(with status: InputStatus)
 }
