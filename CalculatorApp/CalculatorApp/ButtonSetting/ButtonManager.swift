@@ -85,7 +85,7 @@ class ButtonManager {
     ///
     /// ``didTapButton``
     @objc private func passDataToDelegate(_ button: UIButton) {
-        guard let text = button.titleLabel?.text else { return }
+        guard let text = button.title(for: .normal) else { return }
         delegate?.didTapButton(with: text)
     }
 }
