@@ -7,6 +7,7 @@
 
 import UIKit
 
+// Manage and calculate epxression
 class CalculatorLogic {
     weak var delegate: CalculatorLogicDelegate?
     
@@ -24,7 +25,6 @@ class CalculatorLogic {
 
 extension CalculatorLogic {
     internal func resetExpression() { self.expression = "0" }
-    internal func getExpression() -> String { self.expression }
     internal func appendExpression(_ input: String) { self.expression.append(input)}
 }
 
