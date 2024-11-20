@@ -53,6 +53,8 @@ extension ViewController {
         expressionLabel.textColor = .white
         expressionLabel.textAlignment = .right
         expressionLabel.font = UIFont.boldSystemFont(ofSize: 60)
+        expressionLabel.adjustsFontSizeToFitWidth = true
+        expressionLabel.minimumScaleFactor = 0.4
         view.addSubview(expressionLabel)
         expressionLabel.snp.makeConstraints {
             $0.leading.equalToSuperview().offset(30)
