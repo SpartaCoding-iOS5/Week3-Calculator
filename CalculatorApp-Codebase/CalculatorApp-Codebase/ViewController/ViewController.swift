@@ -38,6 +38,7 @@ class ViewController: UIViewController {
     
     private func configureUI() {
         view.backgroundColor = .black
+        view.translatesAutoresizingMaskIntoConstraints = false
         configureExpressionLabel()
         configureSuperStack()
         configureButton()
@@ -100,7 +101,7 @@ extension ViewController {
     }
 }
 
-// CalculatorButton:
+// CalculatorButton & buttonAction
 extension ViewController {
     private enum CalculatorButton {
         case number(Int), operation(String), allClear, equal
@@ -133,13 +134,11 @@ extension ViewController {
             button.setTitleColor(.white, for: .normal)
             button.titleLabel?.font = .boldSystemFont(ofSize: 30)
             button.addTarget(self, action: #selector(buttonAction(from:)), for: .touchDown)
+            button.addTarget(self, action: #selector(buttonAnimation(from:)), for: .touchDown)
             return button
         }
     }
-}
-
-// Button Actions:
-extension ViewController {
+    
     @objc private func buttonAction(from sender: UIButton) {
         guard let buttonTitle = sender.titleLabel?.text else { return }
         
@@ -155,6 +154,20 @@ extension ViewController {
         default:
             break
         }
+    }
+    
+    @objc private func buttonAnimation(from sender: UIButton) {
+        let originalColor = sender.backgroundColor
+        UIView.animate(withDuration: 0.05,
+                       animations: {
+            sender.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
+            sender.backgroundColor = originalColor?.withAlphaComponent(0.9)
+        }, completion: { _ in
+            UIView.animate(withDuration: 0.05) {
+                sender.transform = .identity
+                sender.backgroundColor = originalColor
+            }
+        })
     }
 }
 
