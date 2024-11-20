@@ -132,7 +132,7 @@ final class ViewController: UIViewController, ButtonManagerDelegate, FatalErrorT
             let resultCalculate = self.calculator.calculate()
             self.displayLabel.text = resultCalculate == nil ? "Error" : String(resultCalculate!)
             
-        case let .input(currentInput) where checkOperator(currentInput):
+        case let .input(currentInput) where ["+","-","*","/"].contains(currentInput):
             // 연산자 중복을 방지
             // 만약 현재 레이블의 마지막 값이 연산자라면, 새로운 연산자로 변경
             changeOperator(currentInput)
@@ -140,7 +140,8 @@ final class ViewController: UIViewController, ButtonManagerDelegate, FatalErrorT
         case let .input(currentInput) where (self.displayLabel.text != "Error"):
             // 입력이 정수이고 현재 레이블 값이 Error가 아닐 경우
             // 현재 레이블값에 입력된 값을 추가 혹은 변경
-            self.displayLabel.text = (self.displayLabel.text == "0") ? currentInput : (self.displayLabel.text ?? "") + currentInput
+            let currenDisplayLabelCheck = (self.displayLabel.text == "0")
+            self.displayLabel.text = currenDisplayLabelCheck ? currentInput : (self.displayLabel.text! + currentInput)
             
         default:
             break
@@ -208,30 +209,17 @@ final class ViewController: UIViewController, ButtonManagerDelegate, FatalErrorT
 }
 
 private extension ViewController {
-    /// 입력된 값이 연산자이고 중복되었는지 확인하는 메소드
-    /// - Parameter input: 입력된 값(버튼)을 확인
-    /// - Returns: 연산자가 중복 사용됐다면 true, 아니라면 false 반환
-    func checkOperator(_ input: String) -> Bool {
-        var result: Bool = false
-        let operators = ["+","-","*","/"]
-        let lastText = self.displayLabel.text?.last
-        
-        guard operators.contains(input) else {
-            return result
-        }
-        
-        guard operators.contains(String(lastText!)) else {
-            return result
-        }
-        
-        result = true
-        
-        return result
-    }
-    
     /// 연산자가 중복 사용된 경우 연산자를 바꾸는 메소드
     /// - Parameter input: 입력된 값(버튼) 확인
     func changeOperator(_ input: String) {
+        let operators = ["+","-","*","/"]
+        let lastText = self.displayLabel.text?.last
+        
+        guard operators.contains(String(lastText!)) else {
+            self.displayLabel.text! += input
+            return
+        }
+        
         self.displayLabel.text?.removeLast()
         self.displayLabel.text? += input
     }
