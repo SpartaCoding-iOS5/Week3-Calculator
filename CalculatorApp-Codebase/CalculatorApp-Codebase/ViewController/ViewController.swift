@@ -9,42 +9,7 @@ import UIKit
 import SnapKit
 
 class ViewController: UIViewController {
-    
-    private enum CalculatorButton {
-        case number(Int), operation(String), allClear, equal
-        
-        var title: String {
-            switch self {
-            case .number(let value): return "\(value)"
-            case .operation(let symbol): return symbol
-            case .allClear: return "AC"
-            case .equal: return "="
-            }
-        }
-        
-        var backgroundColor: UIColor {
-            switch self {
-            case .number: return .systemGray
-            case .operation: return .systemOrange
-            case .allClear: return .systemOrange
-            case .equal: return .systemOrange
-            }
-        }
-        
-        var button: UIButton {
-            let button = UIButton()
-            button.frame.size.height = 80
-            button.frame.size.width = 80
-            button.layer.cornerRadius = 40
-            button.backgroundColor = self.backgroundColor
-            button.setTitle(self.title, for: .normal)
-            button.setTitleColor(.white, for: .normal)
-            button.titleLabel?.font = .boldSystemFont(ofSize: 30)
-            button.addTarget(self, action: #selector(buttonAction(from:)), for: .touchDown)
-            return button
-        }
-    }
-    
+    private let calculatorLogic = CalculatorLogic()
     private let expressionLabel = UILabel()
     private let superStack = UIStackView()
     private let horizontalStacks: [UIStackView] = (0..<4).map { _ in UIStackView() }
@@ -64,19 +29,10 @@ class ViewController: UIViewController {
     private let buttonDivide = CalculatorButton.operation("÷").button
     private let buttonAllClear = CalculatorButton.allClear.button
     private let buttonEqual = CalculatorButton.equal.button
-    private var expression = "0" {
-            didSet { // Exception Handling: Expressions that start with 0
-                if self.expression.count > 1 && self.expression[expression.startIndex] == "0" {
-                    if expression[expression.index(expression.startIndex, offsetBy: 1)].isNumber {
-                        self.expression.removeFirst()
-                    }
-                } // Update expressionLabel when value changed
-                self.expressionLabel.text = self.expression
-            }
-        }
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        calculatorLogic.delegate = self
         configureUI()
     }
     
@@ -86,46 +42,10 @@ class ViewController: UIViewController {
         configureSuperStack()
         configureButton()
     }
-    
-    // Button Actions:
-    @objc private func buttonAction(from sender: UIButton) {
-        guard let buttonTitle = sender.titleLabel?.text else { return }
+}
 
-        switch buttonTitle {
-        case "0", "1", "2", "3", "4", "5", "6", "7", "8", "9":
-            self.expression.append(buttonTitle)
-        case "+", "-", "×", "÷":
-            self.expression.append(buttonTitle)
-        case "AC":
-            resetExpression()
-        case "=":
-            if let result = calculate(expression) {
-                expression = String(result)
-            }
-        default:
-            break
-        }
-    }
-
-    private func resetExpression() { self.expression = "0" }
-        
-    private func calculate(_ expression: String) -> Int? {
-        let expression = NSExpression(format: changeMathSymbols(expression))
-        if let result = expression.expressionValue(with: nil, context: nil) as? Int {
-            return result
-        } else {
-            return nil
-        }
-    }
-    
-    private func changeMathSymbols(_ expression: String) -> String {
-        expression
-            .replacingOccurrences(of: "×", with: "*")
-            .replacingOccurrences(of: "÷", with: "/")
-    }
-    
-    // UI Configurations:
-    
+// UI Configurations:
+extension ViewController {
     private func configureExpressionLabel() {
         expressionLabel.backgroundColor = .black
         expressionLabel.text = "0"
@@ -177,6 +97,71 @@ class ViewController: UIViewController {
             .forEach { horizontalStacks[2].addArrangedSubview($0) }
         [buttonAllClear, button0, buttonEqual, buttonDivide]
             .forEach { horizontalStacks[3].addArrangedSubview($0) }
+    }
+}
+
+// CalculatorButton:
+extension ViewController {
+    private enum CalculatorButton {
+        case number(Int), operation(String), allClear, equal
+        
+        var title: String {
+            switch self {
+            case .number(let value): return "\(value)"
+            case .operation(let symbol): return symbol
+            case .allClear: return "AC"
+            case .equal: return "="
+            }
+        }
+        
+        var backgroundColor: UIColor {
+            switch self {
+            case .number: return .systemGray
+            case .operation: return .systemOrange
+            case .allClear: return .systemOrange
+            case .equal: return .systemOrange
+            }
+        }
+        
+        var button: UIButton {
+            let button = UIButton()
+            button.frame.size.height = 80
+            button.frame.size.width = 80
+            button.layer.cornerRadius = 40
+            button.backgroundColor = self.backgroundColor
+            button.setTitle(self.title, for: .normal)
+            button.setTitleColor(.white, for: .normal)
+            button.titleLabel?.font = .boldSystemFont(ofSize: 30)
+            button.addTarget(self, action: #selector(buttonAction(from:)), for: .touchDown)
+            return button
+        }
+    }
+}
+
+// Button Actions:
+extension ViewController {
+    @objc private func buttonAction(from sender: UIButton) {
+        guard let buttonTitle = sender.titleLabel?.text else { return }
+        
+        switch buttonTitle {
+        case "0", "1", "2", "3", "4", "5", "6", "7", "8", "9":
+            calculatorLogic.appendExpression(buttonTitle)
+        case "+", "-", "×", "÷":
+            calculatorLogic.appendExpression(buttonTitle)
+        case "AC":
+            calculatorLogic.resetExpression()
+        case "=":
+            calculatorLogic.calculate()
+        default:
+            break
+        }
+    }
+}
+
+// Retrieve Update from CalculatorLogic
+extension ViewController: CalculatorLogicDelegate {
+    internal func didUpdateExpression(_ expression: String) {
+        self.expressionLabel.text = expression
     }
 }
 

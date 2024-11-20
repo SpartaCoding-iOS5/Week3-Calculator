@@ -1,74 +1,73 @@
-# 계산기 만들기 과제 (Week 3-4)
-
-Swift와 Xcode를 활용해 간단한 계산기 앱을 개발합니다. 이 과제는 Swift 문법을 바탕으로 Playground에서 구현한 로직을 UI와 통합해 실제 앱으로 구현하는 경험을 목표로 합니다.
-
-## 📝 협업 규칙
-
-### Pull Request 작성 규칙
-1. **형식**: `[레벨] 작업 내용 - 팀원 이름`  
-   - 예: `[Lv_1] 라벨 UI 구현 - 홍길동`
-2. **작업 세부 사항**: 구현한 주요 기능과 로직에 대한 요약을 작성합니다.
-
-### 레포지토리 설정 및 브랜치 관리
-1. **Fork로 가져오기**: 각 팀원은 레포지토리를 Fork하여 자신의 개인 레포지토리로 가져옵니다.
-2. **브랜치 생성**: Fork한 개인 레포지토리에서 각자의 이름을 딴 브랜치를 생성합니다.
-3. **Pull Request**: 각자의 브랜치에서 Pull Request를 생성해 코드 리뷰를 요청합니다. 모든 팀원이 Pull Request에 코멘트를 추가하여 피드백을 제공합니다.
-4. **수정 및 Merge**: 피드백을 반영하여 수정한 후, 팀원들의 동의를 얻어 merge를 진행합니다.
-
--> 풀 리퀘스트를 한 후 Merge하지 않은채 커밋-푸시를 하면 기존 풀 리퀘스트에 들어가기 때문에 그럴 경우 새로운 브랜치를 만듭니다. (ex. Jamong-Lv1, Jamong-Lv2 ...)
-
-## 📂 코드 파일 구조
-
-- **CalculatorApp**: 프로젝트의 메인 진입점이며, SwiftUI로 구현된 인터페이스를 통해 계산기 앱이 실행됩니다.
-  - **Main.storyboard**: 앱의 기본 UI 구성과 레이아웃을 설정하는 스토리보드 파일입니다.
-  - **CalculatorViewController.swift**: 계산기의 주요 기능을 구현한 뷰 컨트롤러 파일입니다.
-  - **Extensions**: UIView와 UIButton에 필요한 공통 설정 및 기능 확장을 모아둔 파일입니다.
-  - **Utilities**: 계산 로직을 처리하는 헬퍼 메서드를 포함한 파일로, Swift의 `NSExpression`을 활용한 수식 계산 메서드가 구현되어 있습니다.
-
-## 🌟 필수 구현 기능 (Levels 1-5)
-
-- **Level 1**: `UILabel`을 사용해 수식을 표시하는 UI를 구현합니다.  
-- **Level 2**: `UIStackView`를 이용하여 숫자 및 연산 버튼을 구성하는 가로 스택 뷰를 생성합니다.
-- **Level 3**: 세로 스택 뷰로 전체 버튼을 배열하여 계산기의 전반적인 UI를 완성합니다.
-- **Level 4**: 연산 버튼의 색상을 오렌지로 설정해 차별화합니다.
-- **Level 5**: 버튼을 원형으로 만들기 위해 `cornerRadius` 속성을 조정합니다.
-
-## 💪 도전 구현 기능 (Levels 6-8)
-
-- **Level 6**: 버튼 클릭 시 라벨에 숫자와 연산 기호가 차례로 표시되도록 구현합니다.
-- **Level 7**: `AC` 버튼 클릭 시 초기화되어 기본 값 `0`이 표시되도록 구현합니다.
-- **Level 8**: `=` 버튼을 클릭하면 수식이 계산되어 결과가 라벨에 표시되도록 구현합니다.
-
-## 📜 구현 가이드
-
-- **CalculatorViewController.swift**  
-  각 레벨에 따라 구현된 기능을 `CalculatorViewController.swift` 파일에 추가하여 기본 UI와 로직을 통합합니다.
-
-```swift
-func calculate(expression: String) -> Int? {
-    let expression = NSExpression(format: expression)
-    if let result = expression.expressionValue(with: nil, context: nil) as? Int {
-        return result
-    } else {
-        return nil
-    }
-}
+# CalculatorApp
+## Codebase
+### Folder Organization
+``` 
+CalculatorApp-Codebase/
+│
+├── App/
+│   ├── AppDelegate.swift
+│   ├── SceneDelegate.swift
+│   ├── Info.plist
+│   └── LaunchScreen.storyboard
+│
+├── Model/
+│   └── CalculatorLogic.swift
+│
+├── View/
+│   ├── CalculatorButton.swift
+│   └── ExpressionLabel.swift
+│
+├── Controller/
+│   └── ViewController.swift
+│
+└── Resources/
+    └── Assets.xcassets
 ```
 
-- **버튼 및 라벨 설정**  
-  - 버튼의 색상, 크기, 모양을 설정하고 라벨에 표시될 수식을 업데이트합니다.
-
 ---
 
-## 🎯 목표
+## Codebase.Ver.0.0.8
+- CalculatorApp-Storyboard Ver.0.0.8 (Lv.8) 파일이 포함됨
+- CalculatorApp-Codebase Ver.0.0.8 (Lv.8)
 
-- **기한**: 11월 22일 (금) 낮 12시까지 제출
-- **제출물**: 개인 과제 결과물을 GitHub에 올리고 링크를 제출합니다.
+### CalculatorApp-Storyboard Ver.0.0.8 (Lv.8)
+숫자와 연산자 버튼을 누를 때마다 `expression` 문자열에 추가하고, 이를 화면(expressionLabel)에 표시한다.
+"=" 버튼을 누르면 수식을 계산하여 결과를 표시하며, "AC" 버튼으로 초기화한다. 
+곱셈(`×`)과 나눗셈(`÷`)은 실제 계산을 위해 `*`, `/`로 변환된다.
 
-## 🔗 참고 링크
-- [Swift 기초 및 iOS 개발 환경 설정](https://developer.apple.com/swift/)
-- [Auto Layout 사용 가이드](https://developer.apple.com/documentation/uikit/auto_layout/)
+![image](https://github.com/user-attachments/assets/4c6fba3c-4cf3-40c5-983f-ae5cfc953c04)
 
----
+### CalculatorApp-Codebase Ver.0.0.8 (Lv.8)
 
-이번 과제를 통해 UI와 로직의 통합 구현을 연습하고, 협업을 통한 코드 리뷰와 피드백을 통해 더 나은 코드 품질을 만들어 봅시다.
+#### �️ **열거형을 활용한 버튼 관리 (`CalculatorButton`)**
+- `enum CalculatorButton`으로 버튼의 상태를 정의:
+  - **숫자 버튼**과 **연산자 버튼**을 동일한 열거형으로 관리.
+  - 각 버튼의 **타이틀, 배경색** 등을 프로퍼티로 제공.
+  - **`button` 프로퍼티**를 통해 버튼 인스턴스를 생성하여 일관성 있는 설정 제공.
+  - **객체 지향 원칙 활용**: 중복되는 버튼 설정(프레임, 색상, 텍스트 스타일)을 열거형 내부에서 한 번만 정의하여 중복 코드 최소화.
+
+#### � **버튼 액션 처리의 통합적 구현**
+- **모든 버튼의 액션을 `buttonAction` 메서드로 통합**:
+  - `UIButton`의 **타이틀 기반으로 동작 결정** (`titleLabel?.text`).
+  - **숫자와 연산자 구분 없이 동일한 메서드**에서 처리.
+  - `switch` 문을 활용하여 각 버튼의 기능(숫자 추가, 연산자 추가, 초기화, 계산) 실행.
+  - **선언형 접근법**: 버튼마다 개별 메서드를 만드는 대신, 액션 메서드를 하나로 통합하여 유지보수성 강화.
+
+#### �️ **`didSet`를 활용한 표현식 업데이트**
+- **`expression` 프로퍼티에 `didSet` 사용**:
+  - **상태 변화 감지**: `expression`이 변경될 때마다 라벨에 자동으로 반영.
+  - **숫자 입력 예외 처리**: `0`으로 시작하는 표현식을 자동 정리(두 번째 문자가 숫자일 경우 첫 번째 `0` 제거).
+
+#### � **동적 레이아웃 설정 (`SnapKit`)**
+- **Stack View**:
+  - 수직 스택(superStack)을 상위 컨테이너로 두고, 내부에 4개의 **수평 스택**을 배치.
+  - 각 수평 스택에 버튼 4개씩 배치하여 계산기의 숫자 및 연산자 버튼을 균일하게 정렬.
+- **SnapKit의 제약 조건 사용**:
+  - **수평 스택 간 간격** 및 각 버튼의 크기를 동적으로 조정.
+  - 화면 크기에 따라 적절한 버튼 배치가 자동 조정되도록 설정.
+
+#### � **`NSExpression`을 활용한 수식 평가**
+- 수식 계산은 `NSExpression`을 활용하여 문자열 수식을 평가:
+  - 입력된 수식을 단순히 텍스트가 아닌 **실제 수식으로 변환**하여 계산.
+  - **커스텀 기호(`×`, `÷`)를 표준 수학 기호(`*`, `/`)로 변환**하는 전처리 함수(`changeMathSymbols`) 포함.
+  - `NSExpression`의 내장 계산 기능을 사용하여 **간결하고 안전한 계산 로직** 구현.
