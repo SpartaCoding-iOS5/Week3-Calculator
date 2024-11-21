@@ -8,11 +8,24 @@
 import UIKit
 import SnapKit
 
+// MARK: ViewController Class
+/// This class handles the UI and user interactions for the Calculator app.
+/// It integrates `CalculatorLogic` for handling the calculation logic.
 class ViewController: UIViewController {
+    // MARK: Properties
+    /// Calculator logic instance responsible for calculations and state management.
     private let calculatorLogic = CalculatorLogic()
+    
+    /// Displays the current calculation expression.
     private let expressionLabel = UILabel()
+    
+    /// The main stack containing all button rows (horizontal stacks).
     private let superStack = UIStackView()
+    
+    /// An array of horizontal stacks, each containing buttons for one row.
     private let horizontalStacks: [UIStackView] = (0..<4).map { _ in UIStackView() }
+    
+    /// Buttons for numbers, operators, and special actions.
     private let button0 = CalculatorButton.number(0).button
     private let button1 = CalculatorButton.number(1).button
     private let button2 = CalculatorButton.number(2).button
@@ -30,12 +43,17 @@ class ViewController: UIViewController {
     private let buttonAllClear = CalculatorButton.allClear.button
     private let buttonEqual = CalculatorButton.equal.button
     
+    // MARK: Lifecycle Methods
     override func viewDidLoad() {
         super.viewDidLoad()
         calculatorLogic.delegate = self
         configureUI()
     }
-    
+}
+
+// MARK: - UI Configuration
+extension ViewController {
+    /// Configures the overall UI components of the ViewController.
     private func configureUI() {
         view.backgroundColor = .black
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -43,10 +61,8 @@ class ViewController: UIViewController {
         configureSuperStack()
         configureButton()
     }
-}
-
-// UI Configurations:
-extension ViewController {
+    
+    /// Configures the expression label displaying the current input or result.
     private func configureExpressionLabel() {
         expressionLabel.backgroundColor = .black
         expressionLabel.text = "0"
@@ -64,6 +80,7 @@ extension ViewController {
         }
     }
     
+    /// Configures the main vertical stack view (superStack) that contains all button rows.
     private func configureSuperStack() {
         superStack.axis = .vertical
         superStack.backgroundColor = .black
@@ -76,12 +93,14 @@ extension ViewController {
             $0.width.equalTo(350)
         }
         
+        // Add horizontal stacks to the super stack
         horizontalStacks.forEach {
             superStack.addArrangedSubview($0)
             setupHorizontalStack(for: $0)
         }
     }
     
+    /// Configures a horizontal stack view for a given row of buttons.
     private func setupHorizontalStack(for stack: UIStackView) {
         stack.axis = .horizontal
         stack.spacing = 10
@@ -91,6 +110,7 @@ extension ViewController {
         }
     }
     
+    /// Configures all calculator buttons and places them in the horizontal stacks.
     private func configureButton() {
         [button7, button8, button9, buttonAdd]
             .forEach { horizontalStacks[0].addArrangedSubview($0) }
@@ -103,11 +123,13 @@ extension ViewController {
     }
 }
 
-// CalculatorButton & buttonAction
+// MARK: - Button Configuration and Actions
 extension ViewController {
+    /// Represents different types of calculator buttons.
     private enum CalculatorButton {
         case number(Int), operation(String), allClear, equal
         
+        /// The display title of the button.
         var title: String {
             switch self {
             case .number(let value): return "\(value)"
@@ -117,6 +139,7 @@ extension ViewController {
             }
         }
         
+        /// The background color of the button.
         var backgroundColor: UIColor {
             switch self {
             case .number: return .systemGray
@@ -126,6 +149,7 @@ extension ViewController {
             }
         }
         
+        /// Creates and configures a UIButton for this type.
         var button: UIButton {
             let button = UIButton()
             button.frame.size.height = 80
@@ -141,10 +165,12 @@ extension ViewController {
         }
     }
     
+    /// Handles the action when a button is pressed.
     @objc private func buttonAction(from sender: UIButton) {
         calculatorLogic.buttonAction(from: sender)
     }
     
+    /// Adds an animation to the button when it is pressed.
     @objc private func buttonAnimation(from sender: UIButton) {
         let originalColor = sender.backgroundColor
         UIView.animate(withDuration: 0.05,
@@ -160,13 +186,15 @@ extension ViewController {
     }
 }
 
-// Retrieve Update from CalculatorLogic
+// MARK: - Delegate Implementation
 extension ViewController: CalculatorLogicDelegate {
+    /// Updates the expression label with the latest calculation expression.
     internal func didUpdateExpression(_ expression: String) {
         self.expressionLabel.text = expression
     }
 }
 
+// MARK: - Preview
 #Preview {
     ViewController()
 }

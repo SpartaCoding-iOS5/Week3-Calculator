@@ -7,10 +7,12 @@
 
 import UIKit
 
-// Manage and calculate epxression
+// MARK: CalculatorLogic Class
+/// Handles all the calculation logic, including managing expressions and results.
 class CalculatorLogic {
     weak var delegate: CalculatorLogicDelegate?
     
+    // MARK: Properties
     private var isLastInputOperator = false
     private var isCurrentInputOperator = false
     private var expression = "0" {
@@ -21,6 +23,7 @@ class CalculatorLogic {
 }
 
 // MARK: - Input Handler
+/// Handles input actions and updates the expression accordingly.
 extension CalculatorLogic {
     internal func buttonAction(from sender: UIButton) {
         guard let buttonTitle = sender.titleLabel?.text else { return }
@@ -42,6 +45,8 @@ extension CalculatorLogic {
     }
 }
 
+// MARK: - Input Validation (Exception Handling)
+/// Validates and corrects invalid input cases like duplicated operators or starting zero.
 extension CalculatorLogic {
     // Expressions with duplicated operators
     private func handleLastCharIfNeeded() {
@@ -60,6 +65,8 @@ extension CalculatorLogic {
     }
 }
 
+// MARK: - Expression Modification
+/// Modifies the current expression by appending numbers or operators.
 extension CalculatorLogic {
     internal func appendNumberToExpression(_ input: String) {
         self.isCurrentInputOperator = false
@@ -88,6 +95,8 @@ extension CalculatorLogic {
     }
 }
 
+// MARK: - Math Engine
+/// Handles the mathematical calculations based on the current expression.
 extension CalculatorLogic {
     private func calculate(_ expression: String) -> Int? {
         let expression = NSExpression(format: changeMathSymbols(expression))

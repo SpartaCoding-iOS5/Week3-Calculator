@@ -17,6 +17,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return true
     }
     
+    /// Specifies the supported interface orientations for the application.
+    /// - Note: This method restricts the app to portrait orientation only.
     func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
         return .portrait // Allow Only Portrait Mode
     }
