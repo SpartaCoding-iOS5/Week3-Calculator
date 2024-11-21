@@ -142,20 +142,7 @@ extension ViewController {
     }
     
     @objc private func buttonAction(from sender: UIButton) {
-        guard let buttonTitle = sender.titleLabel?.text else { return }
-        
-        switch buttonTitle {
-        case "0", "1", "2", "3", "4", "5", "6", "7", "8", "9":
-            calculatorLogic.appendExpression(buttonTitle)
-        case "+", "-", "×", "÷":
-            calculatorLogic.appendExpression(buttonTitle)
-        case "AC":
-            calculatorLogic.resetExpression()
-        case "=":
-            calculatorLogic.calculate()
-        default:
-            break
-        }
+        calculatorLogic.buttonAction(from: sender)
     }
     
     @objc private func buttonAnimation(from sender: UIButton) {
