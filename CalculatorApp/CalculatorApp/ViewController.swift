@@ -141,7 +141,11 @@ final class ViewController: UIViewController, ButtonManagerDelegate, FatalErrorT
             // 입력이 정수이고 현재 레이블 값이 Error가 아닐 경우
             // 현재 레이블값에 입력된 값을 추가 혹은 변경
             let currenDisplayLabelCheck = (self.displayLabel.text == "0")
-            self.displayLabel.text = currenDisplayLabelCheck ? currentInput : (self.displayLabel.text! + currentInput)
+            if currenDisplayLabelCheck {
+                self.displayLabel.text = currentInput
+            }else {
+                updateLabelIfZeroDuplicated(currentInput)
+            }
             
         default:
             break
@@ -157,6 +161,38 @@ final class ViewController: UIViewController, ButtonManagerDelegate, FatalErrorT
 
 
 private extension ViewController {
+    /// 0이 중복 사용되었는지 검사하고 결과를 반환하는 메소드
+    /// - Parameter currentInput: 현재 입력값 확인
+    func updateLabelIfZeroDuplicated(_ currentInput: String) {
+        if self.displayLabel.text!.contains("+") ||
+            self.displayLabel.text!.contains("-") ||
+            self.displayLabel.text!.contains("*") ||
+            self.displayLabel.text!.contains("/") {
+
+            for operatorSymbols in ["+", "-", "*", "/"] {
+                if let lastValue = self.displayLabel.text?.components(separatedBy: operatorSymbols) {
+                    guard lastValue.count >= 2 else {
+                        continue
+                    }
+                    
+                    if lastValue.last == "0" {
+                        self.displayLabel.text?.removeLast()
+                        self.displayLabel.text! += currentInput
+                    } else {
+                        self.displayLabel.text! += currentInput
+                    }
+                    break
+                } else {
+                    continue
+                }
+            }
+            
+        } else {
+            self.displayLabel.text! += currentInput
+            return
+        }
+    }
+    
     /// 현재 스크롤뷰의 컨텐츠 위치를 업데이트 시키는 메소드
     ///
     /// 버튼을 누르면 컨텐츠뷰의 사이즈를 계산하여 자동으로 offset 값 변경
