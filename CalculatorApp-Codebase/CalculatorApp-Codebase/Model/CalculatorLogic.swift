@@ -15,25 +15,12 @@ class CalculatorLogic {
     private var isCurrentInputOperator = false
     private var expression = "0" {
         didSet {
-            // Exception Handling: Expressions that start with 0
-            if self.expression.count > 1 && self.expression[expression.startIndex] == "0" {
-                if expression[expression.index(expression.startIndex, offsetBy: 1)].isNumber {
-                    self.expression.removeFirst()
-                }
-            }
-            // Update expressionLabel when value changed
             delegate?.didUpdateExpression(expression)
-        }
-    }
-    
-    // Exception Handling: Expressions that has duplicated operators
-    private func handleLastCharIfNeeded() {
-        if isLastInputOperator && isCurrentInputOperator {
-            self.expression.removeLast()
         }
     }
 }
 
+// MARK: - Input Handler
 extension CalculatorLogic {
     internal func buttonAction(from sender: UIButton) {
         guard let buttonTitle = sender.titleLabel?.text else { return }
@@ -41,6 +28,7 @@ extension CalculatorLogic {
         switch buttonTitle {
         case "0", "1", "2", "3", "4", "5", "6", "7", "8", "9":
             appendNumberToExpression(buttonTitle)
+            handleFirstZeroIfNeeded()
         case "+", "-", "×", "÷":
             handleLastCharIfNeeded()
             appendOperatorToExpression(buttonTitle)
@@ -50,6 +38,24 @@ extension CalculatorLogic {
             calculateExpression()
         default:
             break
+        }
+    }
+}
+
+extension CalculatorLogic {
+    // Expressions with duplicated operators
+    private func handleLastCharIfNeeded() {
+        if isLastInputOperator && isCurrentInputOperator {
+            self.expression.removeLast()
+        }
+    }
+    
+    // Expressions with starting zero
+    private func handleFirstZeroIfNeeded() {
+        if self.expression.count > 1 && self.expression[expression.startIndex] == "0" {
+            if expression[expression.index(expression.startIndex, offsetBy: 1)].isNumber {
+                self.expression.removeFirst()
+            }
         }
     }
 }
