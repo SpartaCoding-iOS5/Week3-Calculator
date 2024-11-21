@@ -30,16 +30,16 @@ extension CalculatorLogic {
         
         switch buttonTitle {
         case "0", "1", "2", "3", "4", "5", "6", "7", "8", "9":
-            handleLeadingZeroIfNeeded() // Exception Handling: Numbers with starting zero
+            handleLeadingZeroIfNeeded() // Input Invalidation: Numbers with starting zero (Case B)
             appendNumberToExpression(buttonTitle)
-            handleFirstZeroIfNeeded() // Exception Handling: Expressions with starting zero
+            handleFirstZeroIfNeeded() // Input Invalidation: Numbers with starting zero (Case A)
         case "+", "-", "×", "÷":
-            handleLastOperatorIfNeeded() // Exception Handling: Expressions with duplicated operators
+            handleLastOperatorIfNeeded() // Input Invalidation: Expressions with duplicated operators
             appendOperatorToExpression(buttonTitle)
         case "AC":
             resetExpression()
         case "=":
-            handleLastOperatorIfNeeded() // Exception Handling: Expressions with an operator in the end
+            handleLastOperatorIfNeeded() // Input Invalidation: Expressions with an operator in the end
             calculateExpression()
         default:
             break
@@ -50,25 +50,45 @@ extension CalculatorLogic {
 // MARK: - Input Validation (Exception Handling)
 /// Validates and corrects invalid input cases like duplicated operators or starting zero.
 extension CalculatorLogic {
+    /// Handles the case where the expression starts with a leading zero (e.g., "0123") - Case A.
+    /// If the second character in the expression is a number, the leading zero is removed.
+    private func handleFirstZeroIfNeeded() {
+        guard self.expression.count > 1 else { return }
+        if self.expression[expression.startIndex] == "0" && self.expression[expression.index(expression.startIndex, offsetBy: 1)].isNumber {
+            self.expression.removeFirst()
+        }
+    }
+    
+    /// Handles the case where the expression has an invalid leading zero (e.g., "+001" or "×03") - Case B.
+    /// Removes the last zero if it is invalid.
+    private func handleLeadingZeroIfNeeded() {
+        guard self.expression.count > 2 else { return }
+        if isLastInputZero && !self.expression[expression.index(expression.endIndex, offsetBy: -2)].isNumber {
+            self.expression.removeLast()
+        }
+    }
+    
+    /// Handles the case where the last input is an operator.
+    /// If the last character in the expression is an operator, it is removed.
     private func handleLastOperatorIfNeeded() {
         if isLastInputOperator {
             self.expression.removeLast()
         }
     }
     
-    private func handleFirstZeroIfNeeded() {
-        if self.expression.count > 1 && self.expression[expression.startIndex] == "0" {
-            if expression[expression.index(expression.startIndex, offsetBy: 1)].isNumber {
-                self.expression.removeFirst()
-            }
+    /// Determines whether handling zero input is necessary.
+    /// - Parameter input: The current input character.
+    /// - Returns: A boolean indicating if the input can proceed.
+    /// - If the input is "0", checks if the last character is "÷" to prevent division by zero.
+    /// - Updates the `isLastInputZero` flag based on the input.
+    private func isHandlingZeroInputNeeded(_ input: String) -> Bool {
+        if input == "0" {
+            guard self.expression[expression.index(expression.endIndex, offsetBy: -1)] != "÷" else { return false }
+            self.isLastInputZero = true
+        } else {
+            self.isLastInputZero = false
         }
-    }
-    
-    private func handleLeadingZeroIfNeeded() {
-        guard self.expression.count > 2 else { return }
-        if isLastInputZero && !expression[expression.index(expression.endIndex, offsetBy: -2)].isNumber {
-            self.expression.removeLast()
-        }
+        return true
     }
 }
 
@@ -76,13 +96,9 @@ extension CalculatorLogic {
 /// Modifies the current expression by appending numbers or operators.
 extension CalculatorLogic {
     internal func appendNumberToExpression(_ input: String) {
+        guard isHandlingZeroInputNeeded(input) else { return } // Input Invalidation: Expressions that devides with zero
         self.expression.append(input)
         self.isLastInputOperator = false
-        if input == "0" {
-            self.isLastInputZero = true
-        } else {
-            self.isLastInputZero = false
-        }
     }
     
     internal func appendOperatorToExpression(_ input: String) {
