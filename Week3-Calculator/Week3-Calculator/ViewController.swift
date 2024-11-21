@@ -34,7 +34,7 @@ class ViewController: UIViewController {
         valueLabel.text = "0"
         valueLabel.textColor = .white
         valueLabel.textAlignment = .right
-        valueLabel.font = .systemFont(ofSize: LayoutSize.labelFontSize)
+        valueLabel.font = .labelFont
         valueLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(valueLabel)
         
@@ -48,16 +48,16 @@ class ViewController: UIViewController {
     
     // MARK: - 버튼
     private func configureButton(buttonTitle: String) -> UIButton {
-      
+
         let numberButton = UIButton()
         
         numberButton.setTitle(buttonTitle, for: .normal)
         numberButton.setTitleColor(.white, for: .normal)
-        numberButton.titleLabel?.font = .boldSystemFont(ofSize: LayoutSize.buttonFontSize)
+        numberButton.titleLabel?.font = .buttonFont
         
         let backgroundColor = Int(buttonTitle) == nil
-        ? UIColor.calculatorOperatorButton
-        : UIColor.calculatorNumberButton
+                            ? UIColor.calculatorOperatorButton
+                            : UIColor.calculatorNumberButton
         
         numberButton.backgroundColor = backgroundColor
         
@@ -81,12 +81,10 @@ class ViewController: UIViewController {
             valueLabel.text = String(calculate(expression: valueLabel.text ?? "") ?? 0)
             return
         }
-      
-        valueLabel.text = if valueLabel.text == "0" {
-                            sender.currentTitle ?? ""
-                        } else {
-                            (valueLabel.text ?? "") + (sender.currentTitle ?? "")
-                        }
+        
+        valueLabel.text = valueLabel.text == "0"
+                        ? sender.currentTitle ?? ""
+                        : (valueLabel.text ?? "") + (sender.currentTitle ?? "")
     }
     
     // MARK: - 가로로 버튼 4개 가지는 StackView
@@ -141,7 +139,7 @@ class ViewController: UIViewController {
     
     // MARK: - 계산 기능
     func calculate(expression: String) -> Int? {
-            let expression = NSExpression(format: expression)
+        let expression = NSExpression(format: expression)
         if let result = expression.expressionValue(with: nil, context: nil) as? Int {
             return result
         } else {
