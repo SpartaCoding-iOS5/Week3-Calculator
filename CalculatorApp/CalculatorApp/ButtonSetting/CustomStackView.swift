@@ -8,7 +8,7 @@
 import UIKit
 
 /// 커스텀 스택뷰
-class HStackView: UIStackView {
+class CustomStackView: UIStackView {
     
     init(axix: NSLayoutConstraint.Axis = .horizontal) {
         super.init(frame: .zero)
