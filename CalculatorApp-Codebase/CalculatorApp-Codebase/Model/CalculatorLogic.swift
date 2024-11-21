@@ -14,7 +14,7 @@ class CalculatorLogic {
     
     // MARK: Properties
     private var isLastInputOperator = false
-    private var isCurrentInputOperator = false
+    private var isLastInputZero = true
     private var expression = "0" {
         didSet {
             delegate?.didUpdateExpression(expression)
@@ -30,14 +30,16 @@ extension CalculatorLogic {
         
         switch buttonTitle {
         case "0", "1", "2", "3", "4", "5", "6", "7", "8", "9":
+            handleLeadingZeroIfNeeded() // Exception Handling: Numbers with starting zero
             appendNumberToExpression(buttonTitle)
-            handleFirstZeroIfNeeded()
+            handleFirstZeroIfNeeded() // Exception Handling: Expressions with starting zero
         case "+", "-", "×", "÷":
-            handleLastCharIfNeeded()
+            handleLastOperatorIfNeeded() // Exception Handling: Expressions with duplicated operators
             appendOperatorToExpression(buttonTitle)
         case "AC":
             resetExpression()
         case "=":
+            handleLastOperatorIfNeeded() // Exception Handling: Expressions with an operator in the end
             calculateExpression()
         default:
             break
@@ -48,19 +50,24 @@ extension CalculatorLogic {
 // MARK: - Input Validation (Exception Handling)
 /// Validates and corrects invalid input cases like duplicated operators or starting zero.
 extension CalculatorLogic {
-    // Expressions with duplicated operators
-    private func handleLastCharIfNeeded() {
-        if isLastInputOperator && isCurrentInputOperator {
+    private func handleLastOperatorIfNeeded() {
+        if isLastInputOperator {
             self.expression.removeLast()
         }
     }
     
-    // Expressions with starting zero
     private func handleFirstZeroIfNeeded() {
         if self.expression.count > 1 && self.expression[expression.startIndex] == "0" {
             if expression[expression.index(expression.startIndex, offsetBy: 1)].isNumber {
                 self.expression.removeFirst()
             }
+        }
+    }
+    
+    private func handleLeadingZeroIfNeeded() {
+        guard self.expression.count > 2 else { return }
+        if isLastInputZero && !expression[expression.index(expression.endIndex, offsetBy: -2)].isNumber {
+            self.expression.removeLast()
         }
     }
 }
@@ -69,28 +76,32 @@ extension CalculatorLogic {
 /// Modifies the current expression by appending numbers or operators.
 extension CalculatorLogic {
     internal func appendNumberToExpression(_ input: String) {
-        self.isCurrentInputOperator = false
         self.expression.append(input)
         self.isLastInputOperator = false
+        if input == "0" {
+            self.isLastInputZero = true
+        } else {
+            self.isLastInputZero = false
+        }
     }
     
     internal func appendOperatorToExpression(_ input: String) {
-        self.isCurrentInputOperator = true
         self.expression.append(input)
         self.isLastInputOperator = true
+        self.isLastInputZero = false
     }
     
     internal func resetExpression() {
-        self.isCurrentInputOperator = false
         self.expression = "0"
         self.isLastInputOperator = false
+        self.isLastInputZero = true
     }
     
     internal func calculateExpression() {
         if let result = calculate(expression) {
-            self.isCurrentInputOperator = false
             self.expression = String(result)
             self.isLastInputOperator = false
+            self.isLastInputZero = false
         }
     }
 }
