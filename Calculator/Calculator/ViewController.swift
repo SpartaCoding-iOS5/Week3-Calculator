@@ -76,26 +76,24 @@ final class ViewController: UIViewController {
         NSLayoutConstraint.activate([
             numericDisplay.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 30),
             numericDisplay.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -30),
-            numericDisplay.topAnchor.constraint(equalTo: view.topAnchor, constant: 200),
+            numericDisplay.bottomAnchor.constraint(equalTo: keypad.topAnchor, constant: -60),
             numericDisplay.heightAnchor.constraint(equalToConstant: 100),
             
-            keypad.topAnchor.constraint(equalTo: numericDisplay.bottomAnchor, constant: 60),
             keypad.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            keypad.widthAnchor.constraint(equalToConstant: 350),
-            keypad.heightAnchor.constraint(equalToConstant: 350)
+            keypad.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -100),
+            keypad.widthAnchor.constraint(equalToConstant: view.frame.width - 60),
+            keypad.heightAnchor.constraint(equalTo: keypad.widthAnchor)
         ])
     }
 }
 
 // MARK: View Factories
 private extension ViewController {
-    func makeButton(_ title: String, backgroundColor: UIColor) -> UIButton {
-        let button = UIButton()
+    func makeButton(_ title: String, backgroundColor: UIColor) -> CircularButton {
+        let button = CircularButton()
         button.setTitle(title, for: .normal)
         button.titleLabel?.font = .boldSystemFont(ofSize: 30)
         button.backgroundColor = backgroundColor
-        button.frame = CGRect(x: 0, y: 0, width: 80, height: 80)
-        button.layer.cornerRadius = 40
         button.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
         return button
     }
@@ -188,4 +186,3 @@ private extension ViewController {
 #Preview {
     ViewController()
 }
-
