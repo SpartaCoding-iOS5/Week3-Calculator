@@ -20,10 +20,10 @@ class ViewController: UIViewController {
     private let expressionLabel = UILabel()
     
     /// The main stack containing all button rows (horizontal stacks).
-    private let superStack = UIStackView()
+    private let superButtonStack = UIStackView()
     
     /// An array of horizontal stacks, each containing buttons for one row.
-    private let horizontalStacks: [UIStackView] = (0..<4).map { _ in UIStackView() }
+    private let horizontalButtonStacks: [UIStackView] = (0..<4).map { _ in UIStackView() }
     
     /// Buttons for numbers, operators, and special actions.
     private let button0 = CalculatorButton.number(0).button
@@ -57,49 +57,30 @@ extension ViewController {
     private func configureUI() {
         view.backgroundColor = .black
         view.translatesAutoresizingMaskIntoConstraints = false
-        configureExpressionLabel()
-        configureSuperStack()
+        configureSuperButtonStack()
         configureButton()
-    }
-    
-    /// Configures the expression label displaying the current input or result.
-    private func configureExpressionLabel() {
-        expressionLabel.backgroundColor = .black
-        expressionLabel.text = "0"
-        expressionLabel.textColor = .white
-        expressionLabel.textAlignment = .right
-        expressionLabel.font = UIFont.boldSystemFont(ofSize: 60)
-        expressionLabel.adjustsFontSizeToFitWidth = true
-        expressionLabel.minimumScaleFactor = 0.5
-        expressionLabel.numberOfLines = 0
-        expressionLabel.baselineAdjustment = .alignBaselines
-        view.addSubview(expressionLabel)
-        expressionLabel.snp.makeConstraints {
-            $0.leading.equalToSuperview().offset(30)
-            $0.trailing.equalToSuperview().offset(-30)
-            $0.bottom.equalToSuperview().offset(-574)
-            $0.top.greaterThanOrEqualToSuperview().offset(50)
-            $0.height.greaterThanOrEqualTo(100)
-            $0.height.lessThanOrEqualTo(250)
-        }
+        configureExpressionLabel()
     }
     
     /// Configures the main vertical stack view (superStack) that contains all button rows.
-    private func configureSuperStack() {
-        superStack.axis = .vertical
-        superStack.backgroundColor = .black
-        superStack.spacing = 10
-        superStack.distribution = .fillEqually
-        view.addSubview(superStack)
-        superStack.snp.makeConstraints {
+    private func configureSuperButtonStack() {
+        superButtonStack.axis = .vertical
+        superButtonStack.backgroundColor = .black
+        superButtonStack.spacing = 10
+        superButtonStack.distribution = .fillEqually
+        view.addSubview(superButtonStack)
+        superButtonStack.snp.makeConstraints {
+            $0.width.height.equalTo(350)
             $0.centerX.equalToSuperview()
-            $0.top.equalTo(expressionLabel.snp.bottom).offset(60)
-            $0.width.equalTo(350)
+            $0.centerY.equalToSuperview().offset(UIScreen.main.bounds.height * 0.175)
+            $0.bottom.lessThanOrEqualToSuperview().offset(-40)
+            $0.left.greaterThanOrEqualToSuperview()
+            $0.right.lessThanOrEqualToSuperview()
         }
         
         // Add horizontal stacks to the super stack
-        horizontalStacks.forEach {
-            superStack.addArrangedSubview($0)
+        horizontalButtonStacks.forEach {
+            superButtonStack.addArrangedSubview($0)
             setupHorizontalStack(for: $0)
         }
     }
@@ -117,13 +98,35 @@ extension ViewController {
     /// Configures all calculator buttons and places them in the horizontal stacks.
     private func configureButton() {
         [button7, button8, button9, buttonAdd]
-            .forEach { horizontalStacks[0].addArrangedSubview($0) }
+            .forEach { horizontalButtonStacks[0].addArrangedSubview($0) }
         [button4, button5, button6, buttonSubtract]
-            .forEach { horizontalStacks[1].addArrangedSubview($0) }
+            .forEach { horizontalButtonStacks[1].addArrangedSubview($0) }
         [button1, button2, button3, buttonMultiply]
-            .forEach { horizontalStacks[2].addArrangedSubview($0) }
+            .forEach { horizontalButtonStacks[2].addArrangedSubview($0) }
         [buttonAllClear, button0, buttonEqual, buttonDivide]
-            .forEach { horizontalStacks[3].addArrangedSubview($0) }
+            .forEach { horizontalButtonStacks[3].addArrangedSubview($0) }
+    }
+    
+    /// Configures the expression label displaying the current input or result.
+    private func configureExpressionLabel() {
+        expressionLabel.backgroundColor = .black
+        expressionLabel.text = "0"
+        expressionLabel.textColor = .white
+        expressionLabel.textAlignment = .right
+        expressionLabel.font = UIFont.boldSystemFont(ofSize: 60)
+        expressionLabel.adjustsFontSizeToFitWidth = true
+        expressionLabel.minimumScaleFactor = 0.7
+        expressionLabel.numberOfLines = 0
+        expressionLabel.baselineAdjustment = .alignBaselines
+        expressionLabel.lineBreakMode = .byTruncatingHead
+        view.addSubview(expressionLabel)
+        expressionLabel.snp.makeConstraints {
+            $0.right.equalTo(superButtonStack.snp.right).offset(-5)
+            $0.left.equalTo(superButtonStack.snp.left).offset(5)
+            $0.bottom.equalTo(superButtonStack.snp.top).offset(-40)
+            $0.top.greaterThanOrEqualTo(view.snp.top).offset(40)
+            $0.height.greaterThanOrEqualTo(100)
+        }
     }
 }
 
@@ -158,7 +161,7 @@ extension ViewController {
             let button = UIButton()
             button.frame.size.height = 80
             button.frame.size.width = 80
-            button.layer.cornerRadius = 40
+            button.layer.cornerRadius = 80 / 2
             button.backgroundColor = self.backgroundColor
             button.setTitle(self.title, for: .normal)
             button.setTitleColor(.white, for: .normal)
