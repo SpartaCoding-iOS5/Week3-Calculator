@@ -70,13 +70,17 @@ extension ViewController {
         expressionLabel.textAlignment = .right
         expressionLabel.font = UIFont.boldSystemFont(ofSize: 60)
         expressionLabel.adjustsFontSizeToFitWidth = true
-        expressionLabel.minimumScaleFactor = 0.4
+        expressionLabel.minimumScaleFactor = 0.5
+        expressionLabel.numberOfLines = 0
+        expressionLabel.baselineAdjustment = .alignBaselines
         view.addSubview(expressionLabel)
         expressionLabel.snp.makeConstraints {
             $0.leading.equalToSuperview().offset(30)
             $0.trailing.equalToSuperview().offset(-30)
-            $0.top.equalToSuperview().offset(200)
-            $0.height.equalTo(100)
+            $0.bottom.equalToSuperview().offset(-574)
+            $0.top.greaterThanOrEqualToSuperview().offset(50)
+            $0.height.greaterThanOrEqualTo(100)
+            $0.height.lessThanOrEqualTo(250)
         }
     }
     
