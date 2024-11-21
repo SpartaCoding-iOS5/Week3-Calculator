@@ -1,73 +1,98 @@
-# CalculatorApp
-## Codebase
-### Folder Organization
-``` 
+# 📱 CalculatorApp
+
+This is a project for a basic integer calculator capable of performing four fundamental arithmetic operations: addition, subtraction, multiplication, and division. <br>
+
+The project consists of two versions:
+  1. CalculatorApp-Storyboard: A Storyboard-based implementation for designing the calculator’s interface visually (Current Version: 0.0.8).
+  2. CalculatorApp-Codebase: A code-based implementation using programmatic UI to build the calculator (Current Version: 0.2.0).
+
+
+## 📅 Project Scope
+
+| Developer   |  Links                          | Project Timeline      |  
+| --------    | --------------------------------- | ---------------------- |  
+| DoyleHWorks | [GitHub](https://github.com/DoyleHWorks) <br> [Velog](https://velog.io/@doylehworks/posts?tag=ProjectCalculatorApp)  | 2024-10-14 <br> ~ 2024-10-22 |  
+
+## 📚 Tech Stacks
+
+<div> 
+  <img src="https://img.shields.io/badge/Xcode_16.1-147EFB?style=for-the-badge&logo=xcode&logoColor=white">
+  <img src="https://img.shields.io/badge/Swift_5-F05138?style=for-the-badge&logo=swift&logoColor=white"> 
+  <br>
+  <img src="https://img.shields.io/badge/UIKit-2396F3?style=for-the-badge&logo=uikit&logoColor=white">
+  <img src="https://img.shields.io/badge/SnapKit-00aeb9?style=for-the-badge&logoColor=white">
+  <br>
+  <img src="https://img.shields.io/badge/gitkraken-179287?style=for-the-badge&logo=gitkraken&logoColor=white">
+  <img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white">
+  <br>
+</div>
+
+## 🧮 CalculatorApp-Storyboard 0.0.8 (Deprecated)
+
+Implemented the basic UI and button actions using Storyboard.
+
+![image](https://github.com/user-attachments/assets/4c6fba3c-4cf3-40c5-983f-ae5cfc953c04)
+
+## 🛠️ CalculatorApp-Codebase 0.2.0 
+
+### 📂 Folder Organization  
+```
 CalculatorApp-Codebase/
-│
 ├── App/
 │   ├── AppDelegate.swift
 │   ├── SceneDelegate.swift
 │   ├── Info.plist
 │   └── LaunchScreen.storyboard
-│
 ├── Model/
-│   └── CalculatorLogic.swift
-│
-├── View/
-│   ├── CalculatorButton.swift
-│   └── ExpressionLabel.swift
-│
-├── Controller/
+│   ├── CalculatorLogic.swift
+│   └── CalculatorLogicDelegate.swift
+├── ViewController/
 │   └── ViewController.swift
-│
 └── Resources/
     └── Assets.xcassets
 ```
 
----
+### 🖼️ App Preview
+|![Nov-22-2024 01-47-18](https://github.com/user-attachments/assets/2edc0bcd-15ad-4234-a3e6-61e7f544a915)|![image](https://github.com/user-attachments/assets/09007c81-30b3-427d-849e-81d5ee084491)|![image](https://github.com/user-attachments/assets/1cf328fb-fb97-44d3-b719-76c1ec66f35b)|
+|---|---|---|
 
-## Codebase.Ver.0.0.8
-- CalculatorApp-Storyboard Ver.0.0.8 (Lv.8) 파일이 포함됨
-- CalculatorApp-Codebase Ver.0.0.8 (Lv.8)
+### 📐 Main Features & Considerations
 
-### CalculatorApp-Storyboard Ver.0.0.8 (Lv.8)
-숫자와 연산자 버튼을 누를 때마다 `expression` 문자열에 추가하고, 이를 화면(expressionLabel)에 표시한다.
-"=" 버튼을 누르면 수식을 계산하여 결과를 표시하며, "AC" 버튼으로 초기화한다. 
-곱셈(`×`)과 나눗셈(`÷`)은 실제 계산을 위해 `*`, `/`로 변환된다.
+#### 🎨 User Interface
 
-![image](https://github.com/user-attachments/assets/4c6fba3c-4cf3-40c5-983f-ae5cfc953c04)
+- **Expression Label**: Displays the current input or result.
+- **Buttons**: Includes digits (0-9), basic operators (+, -, ×, ÷), an all-clear (AC) button, and an equals (=) button.
 
-### CalculatorApp-Codebase Ver.0.0.8 (Lv.8)
+#### 🧮 Calculation Logic
 
-#### �️ **열거형을 활용한 버튼 관리 (`CalculatorButton`)**
-- `enum CalculatorButton`으로 버튼의 상태를 정의:
-  - **숫자 버튼**과 **연산자 버튼**을 동일한 열거형으로 관리.
-  - 각 버튼의 **타이틀, 배경색** 등을 프로퍼티로 제공.
-  - **`button` 프로퍼티**를 통해 버튼 인스턴스를 생성하여 일관성 있는 설정 제공.
-  - **객체 지향 원칙 활용**: 중복되는 버튼 설정(프레임, 색상, 텍스트 스타일)을 열거형 내부에서 한 번만 정의하여 중복 코드 최소화.
+- **Input Handling**: Manages user inputs, ensuring valid sequences and preventing errors such as multiple consecutive operators or leading zeros.
+- **Expression Evaluation**: Utilizes NSExpression to evaluate mathematical expressions, converting symbols as needed for accurate computation.
 
-#### � **버튼 액션 처리의 통합적 구현**
-- **모든 버튼의 액션을 `buttonAction` 메서드로 통합**:
-  - `UIButton`의 **타이틀 기반으로 동작 결정** (`titleLabel?.text`).
-  - **숫자와 연산자 구분 없이 동일한 메서드**에서 처리.
-  - `switch` 문을 활용하여 각 버튼의 기능(숫자 추가, 연산자 추가, 초기화, 계산) 실행.
-  - **선언형 접근법**: 버튼마다 개별 메서드를 만드는 대신, 액션 메서드를 하나로 통합하여 유지보수성 강화.
+#### 🔍 Input Validation (Exception Handling)
 
-#### �️ **`didSet`를 활용한 표현식 업데이트**
-- **`expression` 프로퍼티에 `didSet` 사용**:
-  - **상태 변화 감지**: `expression`이 변경될 때마다 라벨에 자동으로 반영.
-  - **숫자 입력 예외 처리**: `0`으로 시작하는 표현식을 자동 정리(두 번째 문자가 숫자일 경우 첫 번째 `0` 제거).
+- **Division by Zero**: Prevents invalid operations, such as dividing by zero, by implementing checks before updating the expression.
+- **Operator Validation**: Removes redundant or consecutive operators from the expression dynamically, ensuring the calculation logic remains consistent.
+- **Zero Handling**: Implements specific rules to handle leading zeros in expressions, such as “0123”, by automatically correcting the input.
 
-#### � **동적 레이아웃 설정 (`SnapKit`)**
-- **Stack View**:
-  - 수직 스택(superStack)을 상위 컨테이너로 두고, 내부에 4개의 **수평 스택**을 배치.
-  - 각 수평 스택에 버튼 4개씩 배치하여 계산기의 숫자 및 연산자 버튼을 균일하게 정렬.
-- **SnapKit의 제약 조건 사용**:
-  - **수평 스택 간 간격** 및 각 버튼의 크기를 동적으로 조정.
-  - 화면 크기에 따라 적절한 버튼 배치가 자동 조정되도록 설정.
+#### 🏗️ Architecture: Model + ViewController
+- This project imitates the Model-View-Controller (MVC) design pattern:
+  - **Model**: The CalculatorLogic class encapsulates all business logic, ensuring the UI remains decoupled from the underlying calculation operations.
+  - **ViewController**: Configures and updates UI components like buttons and labels.
 
-#### � **`NSExpression`을 활용한 수식 평가**
-- 수식 계산은 `NSExpression`을 활용하여 문자열 수식을 평가:
-  - 입력된 수식을 단순히 텍스트가 아닌 **실제 수식으로 변환**하여 계산.
-  - **커스텀 기호(`×`, `÷`)를 표준 수학 기호(`*`, `/`)로 변환**하는 전처리 함수(`changeMathSymbols`) 포함.
-  - `NSExpression`의 내장 계산 기능을 사용하여 **간결하고 안전한 계산 로직** 구현.
+#### 🧩 Delegate Pattern
+- Implements the delegate pattern to communicate between the CalculatorLogic model and the ViewController:
+  - **CalculatorLogicDelegate**: Notifies the controller (ViewController) of changes in the expression or result.
+
+#### ✨ Additional Considerations
+- **Efficient Layout Management**: Utilizes SnapKit for concise and readable Auto Layout constraints, simplifying the layout configuration process.
+- **Dynamic Font Scaling**: Ensures the text fits within the label, dynamically adjusting the font size for longer expressions.
+- **Button Animations**: Buttons feature a press animation that highlights the user’s interaction.
+- **Portrait Mode Only**: The app is locked to portrait orientation, ensuring an optimized user experience and layout for calculator functionality.
+- **Dark Content Status Bar**: Configured the status bar to use dark content for better visibility and consistency with the app’s design.
+- **Left and Right Constraints**: Used left and right constraints instead of leading and trailing, as the calculator does not need to support right-to-left languages, keeping the layout simple and intuitive.
+
+## 📦 How to Install  
+1. Clone this repository:  
+   ```bash  
+   git clone https://github.com/DoyleHWorks/CalculatorApp.git  
+   ```  
