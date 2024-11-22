@@ -8,6 +8,6 @@
 import UIKit
 
 extension UIFont {
-    static let labelFont: UIFont = UIFont.systemFont(ofSize: 60, weight: .regular)
+    static let labelFont: UIFont = UIFont.systemFont(ofSize: 60, weight: .bold)
     static let buttonFont: UIFont = UIFont.systemFont(ofSize: 30, weight: .bold)
 }

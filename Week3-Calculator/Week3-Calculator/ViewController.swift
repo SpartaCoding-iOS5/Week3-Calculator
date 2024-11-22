@@ -36,6 +36,7 @@ class ViewController: UIViewController {
         valueLabel.textAlignment = .right
         valueLabel.font = .labelFont
         valueLabel.translatesAutoresizingMaskIntoConstraints = false
+        valueLabel.adjustsFontSizeToFitWidth = true
         view.addSubview(valueLabel)
         
         valueLabel.snp.makeConstraints{
