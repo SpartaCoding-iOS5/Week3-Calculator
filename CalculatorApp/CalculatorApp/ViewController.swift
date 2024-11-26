@@ -7,30 +7,30 @@
 
 import UIKit
 
-class ViewController: UIViewController, ButtonDataDelegate, FatalErrorTerminate {
+final class ViewController: UIViewController, ButtonManagerDelegate, FatalErrorTerminate {
     
     private let displayLabel: UILabel = UILabel()
     
     private let scrollView = UIScrollView()
     
-    private let buttons = ButtonData()
+    private let buttons = ButtonManager()
     
-    private let calculator = Calculator()
+    private var calculator = Calculator()
     
-    private let firstRowStack = ButtonStackView()
-    private let secondRowStack = ButtonStackView()
-    private let thirdRowStack = ButtonStackView()
-    private let fourthRowStack = ButtonStackView()
+    private let firstRowStack = CustomStackView()
+    private let secondRowStack = CustomStackView()
+    private let thirdRowStack = CustomStackView()
+    private let fourthRowStack = CustomStackView()
     
-    private let numberButtonsStack = ButtonStackView(axix: .vertical)
-
+    private let numberButtonsStack = CustomStackView(axix: .vertical)
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         view.backgroundColor = .black
         
         // 델리게이트 프로퍼티 초기화
-        buttons.deleget = self
+        buttons.delegate = self
         
         // fatalError
         calculator.terminate = self
@@ -56,7 +56,7 @@ class ViewController: UIViewController, ButtonDataDelegate, FatalErrorTerminate 
             scrollView.topAnchor.constraint(equalTo: view.topAnchor, constant: 200)
         ])
     }
-
+    
     ///  숫자 및 수식 입력, displayLabel의 기본 세팅
     private func setupDisplayLabel() {
         displayLabel.text = "0"
@@ -67,7 +67,7 @@ class ViewController: UIViewController, ButtonDataDelegate, FatalErrorTerminate 
         displayLabel.font = UIFont.systemFont(ofSize: 60, weight: .bold)
         displayLabel.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(displayLabel)
-                
+        
         NSLayoutConstraint.activate([
             displayLabel.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
             displayLabel.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
@@ -88,12 +88,12 @@ class ViewController: UIViewController, ButtonDataDelegate, FatalErrorTerminate 
     
     /// vertical 스택뷰를 세팅하는 메소드
     ///
-    /// ``setHStack(_:)``
+    /// ``setupHStack(_:)``
     private func setupVStack() {
         setupHStack([firstRowStack,
-                   secondRowStack,
-                   thirdRowStack,
-                   fourthRowStack])
+                     secondRowStack,
+                     thirdRowStack,
+                     fourthRowStack])
         
         numberButtonsStack.addArrangedSubviews([firstRowStack,
                                                 secondRowStack,
@@ -118,72 +118,85 @@ class ViewController: UIViewController, ButtonDataDelegate, FatalErrorTerminate 
     /// **조건 2.** 파라미터 값이 AC가 아닐 경우 - 레이블 값을 변경 혹은 추가
     ///
     /// ``passDataToDelegate(_:)``
-    func didTapButton(with text: String) {
-        if text == "AC" {
+    func didTapButton(with status: InputStatus) {
+        switch status {
+        case .AC:
             self.displayLabel.text = "0"
             
             // AC를 누르면 스크롤뷰의 위치가 초기화되도록 설정
             resetContentViewOffset()
             
-        } else if text == "=" {
+        case .calculate where (self.displayLabel.text != "0" && self.displayLabel.text?.count ?? 0 > 0):
             // 현재 레이블의 값이 0이 아니고 값이 존재하는지 확인
             // 아닐 경우 계산을 진행하지 않음
-            guard self.displayLabel.text != "0" && self.displayLabel.text?.count ?? 0 > 0 else {
-                return
-            }
-            
-            let resultCalculate = self.calculator.calculate(expression: displayLabel.text!)
+            let resultCalculate = self.calculator.calculate()
             self.displayLabel.text = resultCalculate == nil ? "Error" : String(resultCalculate!)
             
-        } else {
-            // 현재 레이블의 값이 에러가 아니라면 텍스트 추가
-            // AC를 통해 초기화 가능
-            guard self.displayLabel.text != "Error" else {
-                return
+        case let .input(currentInput) where ["+","-","*","/"].contains(currentInput):
+            // 연산자 중복을 방지
+            // 만약 현재 레이블의 마지막 값이 연산자라면, 새로운 연산자로 변경
+            changeOperator(currentInput)
+            
+        case let .input(currentInput) where (self.displayLabel.text != "Error"):
+            // 입력이 정수이고 현재 레이블 값이 Error가 아닐 경우
+            // 현재 레이블값에 입력된 값을 추가 혹은 변경
+            let currenDisplayLabelCheck = (self.displayLabel.text == "0")
+            if currenDisplayLabelCheck {
+                self.displayLabel.text = currentInput
+            }else {
+                updateLabelIfZeroDuplicated(currentInput)
             }
             
-            self.displayLabel.text = (displayLabel.text == "0") ? text : (displayLabel.text ?? "") + text
+        default:
+            break
         }
         
         // 버튼을 눌러 레이블 값이 변경되면 스크롤뷰에 업데이트 사항을 추가
         updateContentViewOffset()
-    }
-    
-    /// 치명적인 에러가 발생할 경우 앱을 우아하게 종료시키는 메소드
-    /// - Parameter second: 몇 초 후에 종료시킬 것인지 정하는 파라미터
-    func compulsoryTermination(second: Double) {
-        DispatchQueue.main.asyncAfter(deadline: .now() + second) {
-            UIApplication.shared.perform(#selector(NSXPCConnection.suspend))
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                exit(1)
-            }
-        }
-    }
-    
-    /// 경고창(Alert)를 띄우는 메소드
-    ///
-    /// - 5초 후 앱을 종료한다는 경고를 알림
-    /// - 버튼을 클릭시 앱을 즉시 종료s
-    ///
-    /// ``compulsoryTermination(second:)``
-    func showAlert() {
-        let title = "🚨Fatal Error🚨"
-        let message = "This app will shut down in 5 seconds..."
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        let terminateAction = UIAlertAction(title: "Shut Down", style: .destructive) { _ in
-            self.compulsoryTermination(second: 0)
-        }
         
-        alert.addAction(terminateAction)
-        self.present(alert, animated: true) {
-            self.compulsoryTermination(second: 5.0)
+        // 버튼을 누르면 현재 레이블의 값을 계산기에 추가
+        self.calculator.currentInput = self.displayLabel.text
+    }
+}
+
+
+private extension ViewController {
+    /// 0이 중복 사용되었는지 검사하고 결과를 반환하는 메소드
+    /// - Parameter currentInput: 현재 입력값 확인
+    func updateLabelIfZeroDuplicated(_ currentInput: String) {
+        if self.displayLabel.text!.contains("+") ||
+            self.displayLabel.text!.contains("-") ||
+            self.displayLabel.text!.contains("*") ||
+            self.displayLabel.text!.contains("/") {
+
+            for operatorSymbols in ["+", "-", "*", "/"] {
+                if let lastValue = self.displayLabel.text?.components(separatedBy: operatorSymbols) {
+                    guard lastValue.count >= 2 else {
+                        continue
+                    }
+                    
+                    if lastValue.last == "0" {
+                        self.displayLabel.text?.removeLast()
+                        self.displayLabel.text! += currentInput
+                    } else {
+                        self.displayLabel.text! += currentInput
+                    }
+                    break
+                } else {
+                    continue
+                }
+            }
+            
+        } else {
+            self.displayLabel.text! += currentInput
+            return
         }
     }
     
     /// 현재 스크롤뷰의 컨텐츠 위치를 업데이트 시키는 메소드
     ///
     /// 버튼을 누르면 컨텐츠뷰의 사이즈를 계산하여 자동으로 offset 값 변경
-    private func updateContentViewOffset() {
+    func updateContentViewOffset() {
         if scrollView.contentSize.width >= scrollView.bounds.width {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
                 let newOffsetX = max(0, self.scrollView.contentSize.width - self.scrollView.bounds.width)
@@ -197,7 +210,23 @@ class ViewController: UIViewController, ButtonDataDelegate, FatalErrorTerminate 
     /// 컨텐츠뷰의 크기를 스크롤뷰보다 작게하여 값을 초기화
     ///
     /// ``updateContentViewOffset()``
-    private func resetContentViewOffset() {
-        scrollView.contentSize.width = scrollView.bounds.width - 100
+    func resetContentViewOffset() {
+        scrollView.contentSize = self.displayLabel.intrinsicContentSize
+    }
+    
+    /// 연산자가 중복 사용된 경우 연산자를 바꾸는 메소드
+    /// - Parameter input: 입력된 값(버튼) 확인
+    func changeOperator(_ input: String) {
+        let operators = ["+","-","*","/"]
+        let lastText = self.displayLabel.text?.last
+        
+        guard operators.contains(String(lastText!)) else {
+            self.displayLabel.text! += input
+            return
+        }
+        
+        self.displayLabel.text?.removeLast()
+        self.displayLabel.text? += input
     }
 }
+

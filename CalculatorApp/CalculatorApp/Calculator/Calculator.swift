@@ -7,9 +7,11 @@
 
 import UIKit
 
-class Calculator {
+struct Calculator {
     
     weak var terminate: FatalErrorTerminate?
+    
+    var currentInput: String?
     
     /// 레이블의 값을 계산하는 메소드
     /// - Parameter expression: 레이블의 값을 파라미터로 받는다
@@ -22,11 +24,11 @@ class Calculator {
     ///
     /// ``inputCheck(_:)``
     /// ``CalculatorError``
-    func calculate(expression: String) -> Int? {
+    func calculate() -> Int? {
         var answer: Int?
         
         do {
-            answer = try inputCheck(expression)
+            answer = try inputCheck(self.currentInput ?? "")
             
         } catch CalculatorError.lackOfValue {
             print(CalculatorError.lackOfValue.errorDescription)
